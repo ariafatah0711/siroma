@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Organization;
 use App\Models\RecruitmentPeriod;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -49,7 +48,6 @@ class RecruitmentController extends Controller
 
         return view('pages.recruitments.apply', [
             'period' => $period,
-            'users' => User::where('is_active', true)->orderBy('full_name')->get(),
         ]);
     }
 }

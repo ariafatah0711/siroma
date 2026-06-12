@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\ApplicationDocument;
 use App\Models\RecruitmentPeriod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,15 +15,15 @@ class ApplicationController extends Controller
     public function store(Request $request, RecruitmentPeriod $period): RedirectResponse
     {
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
             'first_division_id' => ['required', 'integer', 'exists:divisions,id'],
             'second_division_id' => ['nullable', 'integer', 'different:first_division_id', 'exists:divisions,id'],
             'motivation' => ['required', 'string', 'min:20'],
+            'cv' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
         ]);
 
         DB::statement('SET @new_application_id = NULL');
         DB::statement('CALL `sp_submit_application`(?, ?, ?, ?, ?, @new_application_id)', [
-            $validated['user_id'],
+            $request->user()->id,
             $period->id,
             $validated['first_division_id'],
             $validated['second_division_id'] ?? null,
@@ -31,6 +32,16 @@ class ApplicationController extends Controller
 
         $applicationId = DB::selectOne('SELECT @new_application_id AS id')->id;
 
+        $cv = $request->file('cv');
+        $path = $cv->store("applications/{$applicationId}", 'public');
+
+        ApplicationDocument::create([
+            'application_id' => $applicationId,
+            'document_type' => 'cv',
+            'original_file_name' => $cv->getClientOriginalName(),
+            'file_path' => $path,
+        ]);
+
         return redirect()
             ->route('applications.show', $applicationId)
             ->with('status', 'Pendaftaran berhasil dikirim.');
@@ -38,6 +49,13 @@ class ApplicationController extends Controller
 
     public function show(Application $application): View
     {
+        $user = request()->user();
+
+        abort_unless(
+            $user && ($application->user_id === $user->id || $user->hasAnyRole(['super_admin', 'reviewer'])),
+            403
+        );
+
         $application->load([
             'user',
             'recruitmentPeriod.organization',

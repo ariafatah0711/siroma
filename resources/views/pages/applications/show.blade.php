@@ -23,6 +23,20 @@
     </section>
 
     <section class="mt-10">
+        <x-section-heading title="Dokumen" />
+        <div class="mt-4 grid gap-3">
+            @forelse ($application->documents as $document)
+                <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="comic-panel-soft block p-4 hover:bg-neutral-100">
+                    <span class="font-black uppercase">{{ $document->document_type }}</span>
+                    <span class="ml-2 text-sm text-neutral-700">{{ $document->original_file_name }}</span>
+                </a>
+            @empty
+                <p class="comic-panel-soft p-4 text-sm font-semibold text-neutral-700">Belum ada dokumen yang tercatat.</p>
+            @endforelse
+        </div>
+    </section>
+
+    <section class="mt-10">
         <x-section-heading title="Riwayat Status" />
         <ol class="mt-4 grid gap-3">
             @foreach ($application->statusHistory as $history)

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'SIROMA' }}</title>
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @vite(['resources/css/app.css', 'resources/css/scrollbar.css', 'resources/js/app.js'])
     @endif
 </head>
 <body class="min-h-[100dvh] text-neutral-950 antialiased">

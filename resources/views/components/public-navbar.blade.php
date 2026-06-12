@@ -11,11 +11,28 @@
         <div class="hidden items-center gap-6 text-sm font-black md:flex">
             <a href="{{ route('organizations.index') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Organisasi</a>
             <a href="{{ route('recruitments.index') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Rekrutmen</a>
+            @auth
+                <span class="max-w-44 truncate text-neutral-700">{{ auth()->user()->full_name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="ink-button ink-button-secondary px-4 py-2 text-sm">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Login</a>
+                <a href="{{ route('register') }}" class="ink-button ink-button-primary px-4 py-2 text-sm">Register</a>
+            @endauth
             <a href="{{ url('/admin') }}" class="ink-button ink-button-secondary px-4 py-2 text-sm">Panel Admin</a>
         </div>
 
         <div class="flex items-center gap-2 md:hidden">
-            <a href="{{ route('recruitments.index') }}" class="ink-button ink-button-primary px-3 py-2 text-xs">Daftar</a>
+            @auth
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="ink-button ink-button-secondary px-3 py-2 text-xs">Logout</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="ink-button ink-button-secondary px-3 py-2 text-xs">Login</a>
+            @endauth
         </div>
     </nav>
 </header>

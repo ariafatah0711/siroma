@@ -62,6 +62,13 @@ class User extends Authenticatable
         return $this->hasMany(Application::class);
     }
 
+    public function canManageRecruitmentFor(Organization $organization): bool
+    {
+        return $this->hasRole('super_admin')
+            || $this->can('manage recruitment periods')
+            || $this->can('manage recruitment periods for organization '.$organization->id);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

@@ -27,16 +27,20 @@
 
 ## Setup
 ```bash
+# laravel
 php artisan install
 php artisan optimize:clear
 php artisan migrate:fresh --seed
 php artisan storage:link
-php artisan serve
-
 php artisan view:cache
+
+# frontend
 npm install
 npm run build
 php artisan test
+
+# serve
+php artisan serve
 ```
 
 ## 1. Membuat Project

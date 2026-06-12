@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class UserSeeder extends Seeder
                 'student_number' => '23010001',
                 'full_name' => 'Andi Pratama',
                 'email' => 'andi.pratama@student.ac.id',
-                'password_hash' => DB::raw("SHA2('andi123', 256)"),
+                'password_hash' => Hash::make('andi123'),
                 'phone' => '081234560001',
                 'faculty' => 'Fakultas Ilmu Komputer',
                 'study_program' => 'Sistem Informasi',
@@ -30,7 +31,7 @@ class UserSeeder extends Seeder
                 'student_number' => '23010002',
                 'full_name' => 'Siti Rahma',
                 'email' => 'siti.rahma@student.ac.id',
-                'password_hash' => DB::raw("SHA2('siti123', 256)"),
+                'password_hash' => Hash::make('siti123'),
                 'phone' => '081234560002',
                 'faculty' => 'Fakultas Ilmu Komputer',
                 'study_program' => 'Informatika',
@@ -42,7 +43,7 @@ class UserSeeder extends Seeder
                 'student_number' => '24010003',
                 'full_name' => 'Budi Santoso',
                 'email' => 'budi.santoso@student.ac.id',
-                'password_hash' => DB::raw("SHA2('budi123', 256)"),
+                'password_hash' => Hash::make('budi123'),
                 'phone' => '081234560003',
                 'faculty' => 'Fakultas Ekonomi',
                 'study_program' => 'Manajemen',
@@ -54,7 +55,7 @@ class UserSeeder extends Seeder
                 'student_number' => '24010004',
                 'full_name' => 'Citra Lestari',
                 'email' => 'citra.lestari@student.ac.id',
-                'password_hash' => DB::raw("SHA2('citra123', 256)"),
+                'password_hash' => Hash::make('citra123'),
                 'phone' => '081234560004',
                 'faculty' => 'Fakultas Ilmu Komputer',
                 'study_program' => 'Sistem Informasi',
@@ -66,7 +67,7 @@ class UserSeeder extends Seeder
                 'student_number' => '24010005',
                 'full_name' => 'Dimas Saputra',
                 'email' => 'dimas.saputra@student.ac.id',
-                'password_hash' => DB::raw("SHA2('dimas123', 256)"),
+                'password_hash' => Hash::make('dimas123'),
                 'phone' => '081234560005',
                 'faculty' => 'Fakultas Teknik',
                 'study_program' => 'Teknik Industri',
@@ -78,7 +79,7 @@ class UserSeeder extends Seeder
                 'student_number' => '24010006',
                 'full_name' => 'Eka Nuraini',
                 'email' => 'eka.nuraini@student.ac.id',
-                'password_hash' => DB::raw("SHA2('eka123', 256)"),
+                'password_hash' => Hash::make('eka123'),
                 'phone' => '081234560006',
                 'faculty' => 'Fakultas Ilmu Sosial',
                 'study_program' => 'Ilmu Komunikasi',
@@ -90,7 +91,7 @@ class UserSeeder extends Seeder
                 'student_number' => '24010007',
                 'full_name' => 'Farhan Akbar',
                 'email' => 'farhan.akbar@student.ac.id',
-                'password_hash' => DB::raw("SHA2('farhan123', 256)"),
+                'password_hash' => Hash::make('farhan123'),
                 'phone' => '081234560007',
                 'faculty' => 'Fakultas Ilmu Komputer',
                 'study_program' => 'Informatika',
@@ -102,7 +103,7 @@ class UserSeeder extends Seeder
                 'student_number' => '24010008',
                 'full_name' => 'Gita Maharani',
                 'email' => 'gita.maharani@student.ac.id',
-                'password_hash' => DB::raw("SHA2('gita123', 256)"),
+                'password_hash' => Hash::make('gita123'),
                 'phone' => '081234560008',
                 'faculty' => 'Fakultas Ekonomi',
                 'study_program' => 'Akuntansi',
