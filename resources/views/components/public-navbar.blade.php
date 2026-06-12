@@ -12,7 +12,7 @@
             <a href="{{ route('organizations.index') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Organisasi</a>
             <a href="{{ route('recruitments.index') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Rekrutmen</a>
             @auth
-                <span class="max-w-44 truncate text-neutral-700">{{ auth()->user()->full_name }}</span>
+                <a href="{{ route('profile.show') }}" class="max-w-44 truncate text-neutral-700 hover:underline hover:decoration-3 hover:underline-offset-4">{{ auth()->user()->full_name }}</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="ink-button ink-button-secondary px-4 py-2 text-sm">Logout</button>
@@ -26,6 +26,7 @@
 
         <div class="flex items-center gap-2 md:hidden">
             @auth
+                <a href="{{ route('profile.show') }}" class="ink-button ink-button-primary px-3 py-2 text-xs">Profil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="ink-button ink-button-secondary px-3 py-2 text-xs">Logout</button>
