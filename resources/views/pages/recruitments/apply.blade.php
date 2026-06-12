@@ -1,11 +1,10 @@
 @extends('layouts.public', ['title' => 'Daftar '.$period->recruitment_title.' - SIROMA'])
 
 @section('content')
-    <h1 class="text-4xl font-black">Daftar {{ $period->recruitment_title }}</h1>
-    <p class="mt-2 text-neutral-700">Pilih akun dummy mahasiswa dan divisi yang diminati.</p>
+    <x-section-heading eyebrow="Application Form" :title="'Daftar '.$period->recruitment_title" description="Pilih akun mahasiswa dummy, tentukan divisi prioritas, lalu tulis motivasi dengan jelas." />
 
     @if ($errors->any())
-        <div class="mt-6 border-2 border-red-700 bg-red-50 p-4 text-sm text-red-900">
+        <div class="mt-6 border-3 border-red-800 bg-red-50 p-4 text-sm text-red-900 shadow-[5px_5px_0_#7f1d1d]">
             <b>Periksa lagi input kamu:</b>
             <ul class="mt-2 list-disc pl-5">
                 @foreach ($errors->all() as $error)
@@ -15,7 +14,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('applications.store', $period) }}" class="mt-8 grid max-w-3xl gap-5">
+    <form method="POST" action="{{ route('applications.store', $period) }}" class="comic-panel mt-8 grid max-w-3xl gap-5 p-5 md:p-7">
         @csrf
         <label class="grid gap-2 font-bold">
             Mahasiswa
@@ -52,6 +51,6 @@
             <textarea name="motivation" rows="6" class="border-2 border-neutral-950 px-3 py-2" required>{{ old('motivation') }}</textarea>
         </label>
 
-        <button class="border-2 border-neutral-950 bg-neutral-950 px-5 py-3 font-bold text-white">Kirim Pendaftaran</button>
+        <x-ink-button type="submit">Kirim Pendaftaran</x-ink-button>
     </form>
 @endsection

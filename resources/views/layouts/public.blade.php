@@ -8,17 +8,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-white text-neutral-950 antialiased">
-    <header class="border-b-2 border-neutral-950">
-        <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-            <a href="{{ route('home') }}" class="font-bold tracking-tight">SIROMA</a>
-            <div class="flex items-center gap-4 text-sm font-semibold">
-                <a href="{{ route('organizations.index') }}" class="hover:underline">Organisasi</a>
-                <a href="{{ route('recruitments.index') }}" class="hover:underline">Rekrutmen</a>
-                <a href="{{ url('/admin') }}" class="rounded border-2 border-neutral-950 px-3 py-1 hover:bg-neutral-950 hover:text-white">Admin</a>
-            </div>
-        </nav>
-    </header>
+<body class="min-h-[100dvh] text-neutral-950 antialiased">
+    <x-public-navbar />
 
     @if (session('status'))
         <div class="mx-auto mt-4 max-w-6xl border-2 border-neutral-950 bg-neutral-100 px-4 py-3 text-sm font-semibold">
@@ -26,12 +17,10 @@
         </div>
     @endif
 
-    <main class="mx-auto max-w-6xl px-4 py-10">
+    <main class="mx-auto max-w-6xl px-4 py-10 md:py-14">
         @yield('content')
     </main>
 
-    <footer class="border-t-2 border-neutral-950 px-4 py-6 text-center text-sm">
-        &copy; 2026 SIROMA. Sistem Informasi Rekrutmen Organisasi Mahasiswa.
-    </footer>
+    <x-public-footer />
 </body>
 </html>

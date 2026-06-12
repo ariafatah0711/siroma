@@ -9,3 +9,95 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer base {
+    :root {
+        --siroma-paper: #fffdf7;
+        --siroma-ink: #141414;
+        --siroma-muted: #5f5f5f;
+        --siroma-tone: #d9d9d9;
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 1px 1px, rgba(20, 20, 20, 0.05) 1px, transparent 0) 0 0 / 18px 18px,
+            var(--siroma-paper);
+        color: var(--siroma-ink);
+    }
+}
+
+@layer components {
+    .comic-panel {
+        border: 3px solid var(--siroma-ink);
+        background: #fff;
+        box-shadow: 8px 8px 0 var(--siroma-ink);
+    }
+
+    .comic-panel-soft {
+        border: 2px solid var(--siroma-ink);
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 5px 5px 0 var(--siroma-ink);
+    }
+
+    .ink-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--siroma-ink);
+        padding: 0.75rem 1.25rem;
+        font-weight: 800;
+        line-height: 1;
+        transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
+        cursor: pointer;
+    }
+
+    .ink-button-primary {
+        background: var(--siroma-ink);
+        color: #fff;
+        box-shadow: 4px 4px 0 #8a8a8a;
+    }
+
+    .ink-button-secondary {
+        background: #fff;
+        color: var(--siroma-ink);
+        box-shadow: 4px 4px 0 var(--siroma-ink);
+    }
+
+    .ink-button:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--siroma-ink);
+    }
+
+    .ink-button:active {
+        transform: translate(0, 0);
+        box-shadow: 2px 2px 0 var(--siroma-ink);
+    }
+
+    .screentone {
+        background-image: radial-gradient(circle, rgba(20, 20, 20, 0.18) 1px, transparent 1px);
+        background-size: 8px 8px;
+    }
+
+    .speed-lines {
+        background:
+            repeating-linear-gradient(115deg, rgba(20, 20, 20, 0.16) 0 2px, transparent 2px 12px),
+            #fff;
+    }
+
+    .burst-label {
+        display: inline-block;
+        border: 2px solid var(--siroma-ink);
+        background: #fff;
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transform: rotate(-2deg);
+        box-shadow: 3px 3px 0 var(--siroma-ink);
+    }
+
+    .angled-panel {
+        clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+    }
+}

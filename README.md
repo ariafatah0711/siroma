@@ -32,6 +32,11 @@ php artisan optimize:clear
 php artisan migrate:fresh --seed
 php artisan storage:link
 php artisan serve
+
+php artisan view:cache
+npm install
+npm run build
+php artisan test
 ```
 
 ## 1. Membuat Project
