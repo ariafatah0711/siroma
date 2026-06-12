@@ -12,16 +12,16 @@
 
 ```text
 1. Membuat project Laravel
-2. Menginstal Filament, Spatie Permission, dan Shield
+2. Menginstal Filament dan Spatie Permission
 3. Membuat database kosong dan mengatur .env
 4. Mengubah struktur SQL lama menjadi migration Laravel
 5. Membuat model dan relasi Eloquent
 6. Membuat migration view, stored procedure, dan trigger
 7. Menjalankan migration
 8. Membuat seeder dan data awal
-9. Menjalankan setup Filament Shield
+9. Membuat role dan permission dengan Spatie
 10. Membuat Filament Resource
-11. Menghasilkan permission dan super admin
+11. Mengatur akses resource berdasarkan role/permission
 12. Menguji CRUD, relasi, upload, autentikasi, dan RBAC
 ```
 
@@ -52,20 +52,31 @@ php artisan filament:install --panels
 ```bash
 composer require spatie/laravel-permission
 
-php artisan vendor:publish \
-    --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 ```
 
-### Filament Shield
+> Project ini memakai Laravel 12, Filament 5, dan Spatie Permission 8. Jangan instal Filament Shield karena versi stabil Shield belum cocok dengan kombinasi Filament 5 + Spatie Permission 8.
 
-```bash
-composer require bezhansalleh/filament-shield
+Jika perintah instalasi Shield sempat gagal, project tetap aman karena Composer menampilkan:
 
-php artisan vendor:publish \
-    --tag="filament-shield-config"
+```text
+Installation failed, reverting ./composer.json and ./composer.lock
 ```
 
-> Jangan jalankan `shield:setup` sebelum migration dan konfigurasi model `User` selesai.
+Artinya Shield belum terpasang dan tidak perlu menjalankan `composer remove bezhansalleh/filament-shield`.
+
+Tambahkan trait Spatie pada model `app/Models/User.php`:
+
+```php
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+    use HasFactory, HasRoles, Notifiable;
+
+    // ...
+}
+```
 
 ## 3. Konfigurasi Database
 
@@ -132,7 +143,7 @@ php artisan make:migration create_siroma_triggers
 Urutan migration:
 
 ```text
-Tabel → Index → View → Stored Procedure → Trigger
+Tabel -> Index -> View -> Stored Procedure -> Trigger
 ```
 
 ## 6. Menjalankan Migration
@@ -161,6 +172,76 @@ php artisan make:seeder UserSeeder
 php artisan make:seeder SiromaSeeder
 ```
 
+Isi `database/seeders/RolePermissionSeeder.php` untuk membuat role dan permission dasar:
+
+```php
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+class RolePermissionSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $permissions = [
+            'view users',
+            'manage users',
+            'view organizations',
+            'manage organizations',
+            'view divisions',
+            'manage divisions',
+            'view recruitment periods',
+            'manage recruitment periods',
+            'view applications',
+            'create applications',
+            'review applications',
+            'delete applications',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::findOrCreate($permission, 'web');
+        }
+
+        $admin = Role::findOrCreate('super_admin', 'web');
+        $reviewer = Role::findOrCreate('reviewer', 'web');
+        $applicant = Role::findOrCreate('applicant', 'web');
+
+        $admin->syncPermissions(Permission::all());
+
+        $reviewer->syncPermissions([
+            'view organizations',
+            'view divisions',
+            'view recruitment periods',
+            'view applications',
+            'review applications',
+        ]);
+
+        $applicant->syncPermissions([
+            'view organizations',
+            'view divisions',
+            'view recruitment periods',
+            'view applications',
+            'create applications',
+        ]);
+    }
+}
+```
+
+Panggil seeder tersebut dari `database/seeders/DatabaseSeeder.php`:
+
+```php
+public function run(): void
+{
+    $this->call([
+        RolePermissionSeeder::class,
+    ]);
+}
+```
+
 Jalankan:
 
 ```bash
@@ -173,23 +254,7 @@ Atau:
 php artisan migrate:fresh --seed
 ```
 
-## 8. Setup Filament Shield
-
-Tambahkan trait `HasRoles` pada model `User`.
-
-Pastikan konfigurasi:
-
-```php
-'auth_provider_model' => App\Models\User::class,
-```
-
-Jalankan:
-
-```bash
-php artisan shield:setup
-```
-
-## 9. Membuat Filament Resource
+## 8. Membuat Filament Resource
 
 ```bash
 php artisan make:filament-resource User --generate
@@ -199,19 +264,9 @@ php artisan make:filament-resource RecruitmentPeriod --generate
 php artisan make:filament-resource Application --generate
 ```
 
-Generate permission:
+Atur pembatasan akses resource langsung memakai permission Spatie, misalnya melalui policy, gate, atau method authorization pada resource Filament. Permission dibuat dan dikelola oleh `RolePermissionSeeder`, bukan oleh Shield.
 
-```bash
-php artisan shield:generate --all --panel=admin
-```
-
-Buat super admin:
-
-```bash
-php artisan shield:super-admin --panel=admin
-```
-
-## 10. Storage dan Menjalankan Project
+## 9. Storage dan Menjalankan Project
 
 ```bash
 php artisan storage:link
