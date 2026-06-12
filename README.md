@@ -8,22 +8,31 @@
 
 ## Setup
 ```bash
-git clone https://github.com/ariafatah0711/siroma
+git clone https://github.com/ariafatah0711/siroma.git
 cd siroma
 
-# laravel
-php artisan install
-php artisan optimize:clear
-php artisan migrate:fresh --seed
-php artisan storage:link
-php artisan view:cache
+# Install dependency PHP
+composer install
+copy .env.example .env
+php artisan key:generate
+```
 
-# frontend
+> ubah konfigurasi database di file `.env` sesuai dengan pengaturan lokal Anda.
+
+```bash
+# Install dependency frontend
 npm install
-npm run build
-php artisan test
 
-# serve
+# Buat tabel dan data awal
+php artisan migrate --seed
+
+# Dibutuhkan untuk upload dokumen publik
+php artisan storage:link
+
+# Build CSS dan JavaScript
+npm run build
+
+# Jalankan aplikasi
 php artisan serve
 ```
 
