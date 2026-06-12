@@ -18,6 +18,7 @@ class Organization extends Model
         'organization_name',
         'description',
         'contact_email',
+        'contact_phone',
     ];
 
     protected function casts(): array

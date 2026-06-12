@@ -19,6 +19,7 @@ class SiromaSeeder extends Seeder
                 'organization_name' => 'Badan Eksekutif Mahasiswa Universitas',
                 'description' => 'Organisasi eksekutif mahasiswa tingkat universitas.',
                 'contact_email' => 'bem@kampus.ac.id',
+                'contact_phone' => '081234567890',
             ],
             [
                 'id' => 2,
@@ -26,6 +27,7 @@ class SiromaSeeder extends Seeder
                 'organization_name' => 'Himpunan Mahasiswa Sistem Informasi',
                 'description' => 'Organisasi mahasiswa Program Studi Sistem Informasi.',
                 'contact_email' => 'himsi@kampus.ac.id',
+                'contact_phone' => '081234567891',
             ],
         ]);
 

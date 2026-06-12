@@ -35,12 +35,12 @@ VALUES
 -- 2. Data organisasi
 -- -----------------------------------------------------
 INSERT INTO `organizations`
-    (`id`, `organization_code`, `organization_name`, `description`, `contact_email`)
+    (`id`, `organization_code`, `organization_name`, `description`, `contact_email`, `contact_phone`)
 VALUES
     (1, 'BEM-UNI', 'Badan Eksekutif Mahasiswa Universitas',
-     'Organisasi eksekutif mahasiswa tingkat universitas.', 'bem@kampus.ac.id'),
+     'Organisasi eksekutif mahasiswa tingkat universitas.', 'bem@kampus.ac.id', '081234567890'),
     (2, 'HIMSI', 'Himpunan Mahasiswa Sistem Informasi',
-     'Organisasi mahasiswa Program Studi Sistem Informasi.', 'himsi@kampus.ac.id');
+     'Organisasi mahasiswa Program Studi Sistem Informasi.', 'himsi@kampus.ac.id', '081234567891');
 
 -- -----------------------------------------------------
 -- 3. Data keanggotaan organisasi

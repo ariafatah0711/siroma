@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Organization;
 use App\Models\RecruitmentPeriod;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -40,8 +41,15 @@ class RecruitmentController extends Controller
         ]);
     }
 
-    public function apply(RecruitmentPeriod $period): View
+    public function apply(Request $request, RecruitmentPeriod $period): View|RedirectResponse
     {
+        $existing = $period->applications()->where('user_id', $request->user()->id)->first();
+
+        if ($existing) {
+            return redirect()->route('applications.show', $existing)
+                ->with('status', 'Kamu sudah mendaftar di rekrutmen ini. Lihat status pendaftaran kamu.');
+        }
+
         $period->load([
             'organization.divisions' => fn ($query) => $query->where('is_active', true)->orderBy('division_name'),
         ]);
