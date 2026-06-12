@@ -14,7 +14,7 @@
     </div>
 
     <section class="mt-10">
-        <x-section-heading title="Pilihan Divisi" />
+        <x-section-heading title="Pilihan Divisi" class="text-center" />
         <ol class="mt-4 grid gap-3">
             @foreach ($application->preferences as $preference)
                 <li class="comic-panel-soft p-4">{{ $preference->preference_order }}. {{ $preference->division->division_name }}</li>
@@ -23,7 +23,7 @@
     </section>
 
     <section class="mt-10">
-        <x-section-heading title="Dokumen" />
+        <x-section-heading title="Dokumen" class="text-center" />
         <div class="mt-4 grid gap-3">
             @forelse ($application->documents as $document)
                 <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="comic-panel-soft block p-4 hover:bg-neutral-100">
@@ -37,7 +37,7 @@
     </section>
 
     <section class="mt-10">
-        <x-section-heading title="Riwayat Status" />
+        <x-section-heading title="Riwayat Status" class="text-center" />
         <ol class="mt-4 grid gap-3">
             @foreach ($application->statusHistory as $history)
                 <li class="comic-panel-soft p-4">

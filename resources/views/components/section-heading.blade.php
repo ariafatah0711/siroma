@@ -1,6 +1,6 @@
 @props(['eyebrow' => null, 'title', 'description' => null])
 
-<div {{ $attributes->merge(['class' => 'max-w-3xl']) }}>
+<div {{ $attributes->merge(['class' => 'mx-auto max-w-3xl']) }}>
     @if ($eyebrow)
         <p class="burst-label mb-4">{{ $eyebrow }}</p>
     @endif

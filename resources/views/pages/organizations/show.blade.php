@@ -11,7 +11,7 @@
     </x-comic-panel>
 
     <section class="mt-10">
-        <x-section-heading title="Divisi" description="Setiap divisi punya fokus kerja yang berbeda. Pilih yang paling sesuai saat daftar rekrutmen." />
+        <x-section-heading title="Divisi" description="Setiap divisi punya fokus kerja yang berbeda. Pilih yang paling sesuai saat daftar rekrutmen." class="text-center" />
         <div class="mt-4 grid gap-4 md:grid-cols-2">
             @foreach ($organization->divisions as $division)
                 <article class="comic-panel-soft p-4">
@@ -23,7 +23,7 @@
     </section>
 
     <section class="mt-10">
-        <x-section-heading title="Periode Rekrutmen" />
+        <x-section-heading title="Periode Rekrutmen" class="text-center" />
         <div class="mt-4 grid gap-4">
             @foreach ($organization->recruitmentPeriods as $period)
                 <a href="{{ route('recruitments.show', $period) }}" class="comic-panel-soft block p-4 hover:bg-neutral-100">

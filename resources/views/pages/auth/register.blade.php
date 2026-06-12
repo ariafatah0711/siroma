@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="mx-auto max-w-3xl">
-        <x-section-heading eyebrow="Register" title="Buat akun mahasiswa" description="Akun ini dipakai untuk mengirim pendaftaran rekrutmen dan melihat status aplikasi." />
+        <x-section-heading eyebrow="Register" title="Buat akun mahasiswa" description="Akun ini dipakai untuk mengirim pendaftaran rekrutmen dan melihat status aplikasi." class="text-center" />
 
         @if ($errors->any())
             <div class="mt-6 border-3 border-red-800 bg-red-50 p-4 text-sm text-red-900 shadow-[5px_5px_0_#7f1d1d]">
@@ -62,7 +62,7 @@
                 <input type="text" name="study_program" value="{{ old('study_program') }}" class="border-2 border-neutral-950 px-3 py-2">
             </label>
 
-            <div class="flex flex-wrap items-center gap-3 md:col-span-2">
+            <div class="flex flex-wrap items-center justify-center gap-3 md:col-span-2">
                 <x-ink-button type="submit">Register</x-ink-button>
                 <x-ink-button :href="route('login')" variant="secondary">Sudah Punya Akun</x-ink-button>
             </div>

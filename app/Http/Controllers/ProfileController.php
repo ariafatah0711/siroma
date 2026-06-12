@@ -35,7 +35,6 @@ class ProfileController extends Controller
             'faculty' => ['nullable', 'string', 'max:100'],
             'study_program' => ['nullable', 'string', 'max:100'],
             'entry_year' => ['nullable', 'integer', 'digits:4', 'min:2000', 'max:'.((int) date('Y') + 1)],
-            'current_password' => ['nullable', 'required_with:password', 'current_password'],
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ]);
 

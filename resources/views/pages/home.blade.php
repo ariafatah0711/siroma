@@ -27,39 +27,35 @@
             </div>
         </div>
 
-        <x-comic-panel class="relative min-h-[470px] overflow-hidden p-6">
-            <div class="speed-lines absolute inset-0 opacity-30"></div>
-            <div class="absolute -right-10 -top-10 h-44 w-44 rounded-full border-4 border-neutral-950 bg-white screentone"></div>
-            <div class="absolute bottom-8 right-8 h-28 w-28 rotate-6 border-4 border-neutral-950 bg-white shadow-[6px_6px_0_#141414]">
-                <div class="grid h-full place-items-center text-center text-sm font-black leading-tight">CV<br>READY</div>
-            </div>
-            <div class="relative grid h-full content-between gap-8">
-                <div>
+        <div class="grid gap-5">
+            <x-comic-panel class="relative overflow-hidden p-6">
+                <div class="speed-lines absolute inset-0 opacity-20"></div>
+                <div class="relative">
                     <p class="font-mono text-sm font-black uppercase tracking-[0.2em]">PANEL PENDAFTARAN</p>
                     <h2 class="mt-3 text-4xl font-black leading-none">Daftar, cek, lanjut seleksi.</h2>
                     <p class="mt-3 max-w-sm text-sm leading-6 text-neutral-700">Semua aplikasi terhubung ke akun login. Tidak perlu pilih nama manual lagi.</p>
-                </div>
-                <div class="grid gap-3">
-                    <div class="comic-panel-soft bg-white p-4">
-                        <p class="text-xs font-black uppercase tracking-[0.16em] text-neutral-600">Wajib</p>
-                        <p class="mt-1 text-xl font-black">Login mahasiswa + CV</p>
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                        <div class="comic-panel-soft bg-white p-4">
+                            <p class="text-xs font-black uppercase tracking-[0.16em] text-neutral-600">Wajib</p>
+                            <p class="mt-1 text-xl font-black">Login + CV</p>
+                        </div>
+                        <div class="comic-panel-soft bg-white p-4">
+                            <p class="text-xs font-black uppercase tracking-[0.16em] text-neutral-600">Output</p>
+                            <p class="mt-1 text-xl font-black">Kode & riwayat status</p>
+                        </div>
                     </div>
-                    <div class="comic-panel-soft bg-white p-4">
-                        <p class="text-xs font-black uppercase tracking-[0.16em] text-neutral-600">Output</p>
-                        <p class="mt-1 text-xl font-black">Kode aplikasi & riwayat status</p>
-                    </div>
                 </div>
-                <dl class="grid grid-cols-2 gap-4">
-                    @foreach ($stats as $label => $value)
-                        <x-stat-card :label="str($label)->headline()" :value="$value" />
-                    @endforeach
-                </dl>
-            </div>
-        </x-comic-panel>
+            </x-comic-panel>
+            <dl class="grid grid-cols-2 gap-4">
+                @foreach ($stats as $label => $value)
+                    <x-stat-card :label="str($label)->headline()" :value="$value" />
+                @endforeach
+            </dl>
+        </div>
     </section>
 
     <section class="mt-24">
-        <x-section-heading eyebrow="How It Works" title="Cara daftar tanpa drama" description="Alurnya dibuat pendek supaya mahasiswa fokus ke pilihan divisi, motivasi, dan berkas CV." />
+        <x-section-heading eyebrow="How It Works" title="Cara daftar tanpa drama" description="Alurnya dibuat pendek supaya mahasiswa fokus ke pilihan divisi, motivasi, dan berkas CV." class="text-center" />
         <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             <x-comic-panel soft class="p-6">
                 <p class="text-5xl font-black">01</p>
@@ -85,7 +81,7 @@
     </section>
 
     <section class="mt-20">
-        <x-section-heading eyebrow="Now Open" title="Rekrutmen aktif" description="Pilih periode yang masih dibuka dan cek detail organisasi sebelum mengirim pendaftaran." />
+        <x-section-heading eyebrow="Now Open" title="Rekrutmen aktif" description="Pilih periode yang masih dibuka dan cek detail organisasi sebelum mengirim pendaftaran." class="text-center" />
         <div class="mt-6 grid gap-4 md:grid-cols-3">
             @forelse ($activeRecruitments as $period)
                 <x-recruitment-card :period="$period" />
@@ -96,7 +92,7 @@
     </section>
 
     <section class="mt-20">
-        <x-section-heading eyebrow="Campus Guild" title="Organisasi" description="Kenali organisasi dan divisi yang tersedia sebelum memilih jalur pendaftaran." />
+        <x-section-heading eyebrow="Campus Guild" title="Organisasi" description="Kenali organisasi dan divisi yang tersedia sebelum memilih jalur pendaftaran." class="text-center" />
         <div class="mt-6 grid gap-4 md:grid-cols-2">
             @foreach ($organizations as $organization)
                 <x-organization-card :organization="$organization" />

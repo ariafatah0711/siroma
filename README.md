@@ -1,32 +1,16 @@
 # Tugas Akhir Pemweb
-
 ## SIROMA
-
 **Sistem Informasi Rekrutmen Organisasi Mahasiswa**
 
 * Nama aplikasi: `SIROMA`
 * Repository: `siroma`
 * Database: `siroma_db`
 
-## Urutan Pengembangan
-
-```text
-1. Membuat project Laravel
-2. Menginstal Filament dan Spatie Permission
-3. Membuat database kosong dan mengatur .env
-4. Mengubah struktur SQL lama menjadi migration Laravel
-5. Membuat model dan relasi Eloquent
-6. Membuat migration view, stored procedure, dan trigger
-7. Menjalankan migration
-8. Membuat seeder dan data awal
-9. Membuat role dan permission dengan Spatie
-10. Membuat Filament Resource
-11. Mengatur akses resource berdasarkan role/permission
-12. Menguji CRUD, relasi, upload, autentikasi, dan RBAC
-```
-
 ## Setup
 ```bash
+git clone https://github.com/ariafatah0711/siroma
+cd siroma
+
 # laravel
 php artisan install
 php artisan optimize:clear
@@ -43,7 +27,26 @@ php artisan test
 php artisan serve
 ```
 
-## 1. Membuat Project
+---
+
+# Development Notes
+## Urutan Pengembangan
+```text
+1. Membuat project Laravel
+2. Menginstal Filament dan Spatie Permission
+3. Membuat database kosong dan mengatur .env
+4. Mengubah struktur SQL lama menjadi migration Laravel
+5. Membuat model dan relasi Eloquent
+6. Membuat migration view, stored procedure, dan trigger
+7. Menjalankan migration
+8. Membuat seeder dan data awal
+9. Membuat role dan permission dengan Spatie
+10. Membuat Filament Resource
+11. Mengatur akses resource berdasarkan role/permission
+12. Menguji CRUD, relasi, upload, autentikasi, dan RBAC
+```
+
+### 1. Membuat Project
 
 ```bash
 composer create-project laravel/laravel siroma "12.*"
@@ -55,9 +58,9 @@ php artisan key:generate
 npm install
 ```
 
-## 2. Instalasi Package
+### 2. Instalasi Package
 
-### Filament
+#### Filament
 
 ```bash
 composer require filament/filament:"~5.0"
@@ -65,7 +68,7 @@ composer require filament/filament:"~5.0"
 php artisan filament:install --panels
 ```
 
-### Spatie Laravel Permission
+#### Spatie Laravel Permission
 
 ```bash
 composer require spatie/laravel-permission
@@ -96,7 +99,7 @@ class User extends Authenticatable
 }
 ```
 
-## 3. Konfigurasi Database
+### 3. Konfigurasi Database
 
 Buat database kosong:
 
@@ -122,7 +125,7 @@ DB_PASSWORD=
 FILESYSTEM_DISK=public
 ```
 
-## 4. Membuat Model, Migration, dan Factory
+### 4. Membuat Model, Migration, dan Factory
 
 Model `User` sudah tersedia dari Laravel. Sesuaikan migration `users` dengan struktur database SIROMA.
 
@@ -150,7 +153,7 @@ Keterangan:
 
 Isi seluruh migration berdasarkan SQL lama sebelum menjalankan `php artisan migrate`.
 
-## 5. Membuat Migration Komponen Database
+### 5. Membuat Migration Komponen Database
 
 ```bash
 php artisan make:migration create_siroma_views
@@ -164,7 +167,7 @@ Urutan migration:
 Tabel -> Index -> View -> Stored Procedure -> Trigger
 ```
 
-## 6. Menjalankan Migration
+### 6. Menjalankan Migration
 
 Jalankan setelah seluruh migration selesai:
 
@@ -182,7 +185,7 @@ Untuk mengulang database selama pengembangan:
 php artisan migrate:fresh
 ```
 
-## 7. Membuat Seeder
+### 7. Membuat Seeder
 
 ```bash
 php artisan make:seeder RolePermissionSeeder
@@ -272,7 +275,7 @@ Atau:
 php artisan migrate:fresh --seed
 ```
 
-## 8. Membuat Filament Resource
+### 8. Membuat Filament Resource
 
 ```bash
 php artisan make:filament-resource User --generate
@@ -284,7 +287,7 @@ php artisan make:filament-resource Application --generate
 
 Atur pembatasan akses resource langsung memakai permission Spatie, misalnya melalui policy, gate, atau method authorization pada resource Filament. Permission dibuat dan dikelola oleh `RolePermissionSeeder`, bukan oleh Shield.
 
-## 9. Storage dan Menjalankan Project
+### 9. Storage dan Menjalankan Project
 
 ```bash
 php artisan storage:link

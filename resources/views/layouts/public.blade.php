@@ -11,12 +11,6 @@
 <body class="min-h-[100dvh] text-neutral-950 antialiased">
     <x-public-navbar />
 
-    @if (session('status'))
-        <div class="mx-auto mt-4 max-w-6xl border-2 border-neutral-950 bg-neutral-100 px-4 py-3 text-sm font-semibold">
-            {{ session('status') }}
-        </div>
-    @endif
-
     <main class="mx-auto max-w-6xl px-4 py-10 md:py-14">
         @yield('content')
     </main>

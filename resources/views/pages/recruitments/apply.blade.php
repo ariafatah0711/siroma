@@ -1,7 +1,7 @@
 @extends('layouts.public', ['title' => 'Daftar '.$period->recruitment_title.' - SIROMA'])
 
 @section('content')
-    <x-section-heading eyebrow="Application Form" :title="'Daftar '.$period->recruitment_title" description="Pendaftaran akan dikirim memakai akun yang sedang login. Pilih divisi, tulis motivasi, dan upload CV agar berkas seleksi lengkap." />
+    <x-section-heading eyebrow="Application Form" :title="'Daftar '.$period->recruitment_title" description="Pendaftaran akan dikirim memakai akun yang sedang login. Pilih divisi, tulis motivasi, dan upload CV agar berkas seleksi lengkap." class="text-center" />
 
     @if ($errors->any())
         <div class="mt-6 border-3 border-red-800 bg-red-50 p-4 text-sm text-red-900 shadow-[5px_5px_0_#7f1d1d]">
@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('applications.store', $period) }}" enctype="multipart/form-data" class="comic-panel mt-8 grid max-w-4xl gap-6 p-5 md:p-7">
+    <form method="POST" action="{{ route('applications.store', $period) }}" enctype="multipart/form-data" class="comic-panel mx-auto mt-8 grid max-w-4xl gap-6 p-5 md:p-7">
         @csrf
         <div class="grid gap-5 md:grid-cols-[0.85fr_1.15fr]">
             <div class="comic-panel-soft p-4">
@@ -70,6 +70,8 @@
             </span>
         </label>
 
-        <x-ink-button type="submit">Kirim Pendaftaran</x-ink-button>
+        <div class="text-center">
+            <x-ink-button type="submit">Kirim Pendaftaran</x-ink-button>
+        </div>
     </form>
 @endsection

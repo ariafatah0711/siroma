@@ -12,6 +12,9 @@ class OrganizationController extends Controller
         return view('pages.organizations.index', [
             'organizations' => Organization::query()
                 ->withCount(['divisions', 'recruitmentPeriods'])
+                ->when(request('search'), fn ($q, $s) => $q->where('organization_name', 'like', "%{$s}%")
+                    ->orWhere('organization_code', 'like', "%{$s}%")
+                    ->orWhere('description', 'like', "%{$s}%"))
                 ->orderBy('organization_name')
                 ->get(),
         ]);
