@@ -151,10 +151,10 @@ Tabel -> Index -> View -> Stored Procedure -> Trigger
 Jalankan setelah seluruh migration selesai:
 
 ```bash
+php artisan migrate --pretend # untuk melihat query SQL tanpa eksekusi
 php artisan optimize:clear
 
 php artisan migrate
-
 php artisan migrate:status
 ```
 
