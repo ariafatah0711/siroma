@@ -25,6 +25,15 @@
 12. Menguji CRUD, relasi, upload, autentikasi, dan RBAC
 ```
 
+## Setup
+```bash
+php artisan install
+php artisan optimize:clear
+php artisan migrate:fresh --seed
+php artisan storage:link
+php artisan serve
+```
+
 ## 1. Membuat Project
 
 ```bash
