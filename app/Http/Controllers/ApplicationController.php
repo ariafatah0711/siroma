@@ -66,15 +66,16 @@ class ApplicationController extends Controller
 
         $application = Application::with('user', 'recruitmentPeriod.organization')->findOrFail($applicationId);
 
-        try {
-            Mail::to($application->user->email)->send(new ApplicationSubmitted($application));
-        } catch (\Throwable $e) {
-            logger('Gagal kirim email pendaftaran: ' . $e->getMessage());
-        }
+        // Email sending disabled as per request
+        // try {
+        //     Mail::to($application->user->email)->send(new ApplicationSubmitted($application));
+        // } catch (\Throwable $e) {
+        //     logger('Gagal kirim email pendaftaran: ' . $e->getMessage());
+        // }
 
         return redirect()
             ->route('applications.show', $applicationId)
-            ->with('status', 'Pendaftaran berhasil dikirim. Cek email untuk informasi lebih lanjut.');
+            ->with('status', 'Pendaftaran berhasil dikirim. Silakan pantau status pendaftaran kamu di bawah.');
     }
 
     public function show(Application $application): View
@@ -156,5 +157,83 @@ class ApplicationController extends Controller
         return redirect()
             ->route('applications.show', $application)
             ->with('status', 'Dokumen berhasil dihapus.');
+    }
+
+    public function resubmit(Request $request, Application $application): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless(
+            $user && $application->user_id === $user->id && $application->application_status === 'rejected',
+            403
+        );
+
+        $validated = $request->validate([
+            'first_division_id'  => ['required', 'integer', 'exists:divisions,id'],
+            'second_division_id' => ['nullable', 'integer', 'different:first_division_id', 'exists:divisions,id'],
+            'motivation'         => ['required', 'string', 'min:20'],
+            'cv'                 => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
+            'portfolio'          => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'certificate'        => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'other_document'     => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'],
+        ]);
+
+        DB::transaction(function () use ($application, $validated, $request) {
+            $application->update([
+                'motivation' => $validated['motivation'],
+                'application_status' => 'submitted',
+                'reviewer_notes' => null,
+                'final_score' => null,
+                'reviewed_at' => null,
+            ]);
+
+            // Update division preferences
+            $application->preferences()->delete();
+            $application->preferences()->create([
+                'division_id' => $validated['first_division_id'],
+                'preference_order' => 1,
+            ]);
+
+            if (!empty($validated['second_division_id'])) {
+                $application->preferences()->create([
+                    'division_id' => $validated['second_division_id'],
+                    'preference_order' => 2,
+                ]);
+            }
+
+            // Upload files
+            $docMap = [
+                'cv'             => 'cv',
+                'portfolio'      => 'portfolio',
+                'certificate'    => 'certificate',
+                'other_document' => 'other',
+            ];
+
+            foreach ($docMap as $inputName => $docType) {
+                $file = $request->file($inputName);
+                if (!$file) continue;
+
+                // Delete old doc if exists
+                $oldDoc = $application->documents()->where('document_type', $docType)->first();
+                if ($oldDoc) {
+                    $path = storage_path('app/public/' . $oldDoc->file_path);
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
+                    $oldDoc->delete();
+                }
+
+                $path = $file->store("applications/{$application->id}", 'public');
+                $application->documents()->create([
+                    'document_type'      => $docType,
+                    'original_file_name' => $file->getClientOriginalName(),
+                    'file_path'          => $path,
+                ]);
+            }
+        });
+
+        return redirect()
+            ->route('applications.show', $application)
+            ->with('status', 'Pendaftaran berhasil diperbarui dan diajukan kembali.');
     }
 }

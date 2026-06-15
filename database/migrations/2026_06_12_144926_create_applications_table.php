@@ -24,7 +24,7 @@ return new class extends Migration
                 ->restrictOnDelete();
             $table->text('motivation');
             $table->decimal('final_score', 5, 2)->nullable();
-            $table->enum('application_status', ['submitted', 'under_review', 'accepted', 'rejected', 'withdrawn'])->default('submitted');
+            $table->enum('application_status', ['submitted', 'under_review', 'interview', 'accepted', 'rejected', 'withdrawn'])->default('submitted');
             $table->string('reviewer_notes', 500)->nullable();
             $table->timestamp('submitted_at')->useCurrent();
             $table->dateTime('reviewed_at')->nullable();

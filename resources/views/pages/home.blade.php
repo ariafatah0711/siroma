@@ -9,7 +9,6 @@
             <p class="mt-6 max-w-2xl text-lg leading-8 text-neutral-700">Cari rekrutmen yang sedang dibuka, pilih divisi, upload CV, lalu pantau status seleksi dari akun mahasiswa kamu sendiri.</p>
             <div class="mt-8 flex flex-wrap gap-3">
                 <x-ink-button :href="route('recruitments.index')">Mulai Daftar</x-ink-button>
-                <x-ink-button :href="route('organizations.index')" variant="secondary">Eksplor Organisasi</x-ink-button>
             </div>
             <div class="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
                 <div class="border-l-4 border-neutral-950 pl-3">
@@ -74,8 +73,8 @@
             </x-comic-panel>
             <x-comic-panel soft class="p-6 lg:translate-y-8">
                 <p class="text-5xl font-black">04</p>
-                <h3 class="mt-4 text-2xl font-black">Pantau status</h3>
-                <p class="mt-3 text-sm leading-6 text-neutral-700">Setelah aplikasi terkirim, gunakan kode pendaftaran untuk melihat status dan riwayat perubahan.</p>
+                <h3 class="mt-4 text-2xl font-black">Wawancara & Hasil</h3>
+                <p class="mt-3 text-sm leading-6 text-neutral-700">Setelah berkas dinyatakan lolos, kamu akan dihubungi untuk wawancara dan dapat memantau status akhir kelulusan.</p>
             </x-comic-panel>
         </div>
     </section>
@@ -88,15 +87,6 @@
             @empty
                 <p>Belum ada rekrutmen aktif.</p>
             @endforelse
-        </div>
-    </section>
-
-    <section class="mt-20">
-        <x-section-heading eyebrow="Campus Guild" title="Organisasi" description="Kenali organisasi dan divisi yang tersedia sebelum memilih jalur pendaftaran." class="text-center" />
-        <div class="mt-6 grid gap-4 md:grid-cols-2">
-            @foreach ($organizations as $organization)
-                <x-organization-card :organization="$organization" />
-            @endforeach
         </div>
     </section>
 

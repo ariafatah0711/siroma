@@ -31,7 +31,7 @@
         <x-stat-card label="Dikirim" :value="$application->submitted_at->translatedFormat('d M Y H:i')" />
     </div>
 
-    @if ($application->application_status === 'submitted' || $application->application_status === 'under_review')
+    @if ($application->application_status === 'submitted' || $application->application_status === 'under_review' || $application->application_status === 'interview')
         <section class="mt-10">
             <x-comic-panel class="relative overflow-hidden p-5 md:p-7">
                 <div class="screentone absolute inset-y-0 right-0 w-1/3 opacity-30"></div>
@@ -54,6 +54,80 @@
                             <p class="mt-2 text-sm leading-6 text-neutral-700">Hasil akhir akan diinfokan melalui email yang terdaftar.</p>
                         </div>
                     </div>
+                </div>
+            </x-comic-panel>
+        </section>
+    @endif
+
+    @if ($application->application_status === 'rejected')
+        <section class="mt-10">
+            <x-comic-panel class="relative overflow-hidden p-6 md:p-8">
+                <div class="speed-lines absolute inset-0 opacity-20"></div>
+                <div class="relative">
+                    <h2 class="text-3xl font-black text-red-700">❌ Seleksi Berkas Belum Lolos</h2>
+                    <p class="mt-2 text-sm font-bold text-neutral-800">Catatan Reviewer: "{{ $application->reviewer_notes }}"</p>
+                    <p class="mt-4 text-sm font-semibold text-neutral-600">Silakan perbaiki motivasi atau unggah ulang dokumen kamu di bawah ini untuk mengajukan kembali pendaftaran.</p>
+
+                    <form method="POST" action="{{ route('applications.resubmit', $application) }}" enctype="multipart/form-data" class="mt-6 grid gap-6">
+                        @csrf
+                        
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <label class="grid gap-2 font-bold text-sm">
+                                <span>Pilihan Divisi Pertama <span class="text-red-600">*</span></span>
+                                <select name="first_division_id" class="border-2 border-neutral-950 bg-white px-3 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-neutral-950 transition" required>
+                                    <option value="">Pilih divisi utama</option>
+                                    @foreach ($application->recruitmentPeriod->organization->divisions->where('is_active', true) as $division)
+                                        <option value="{{ $division->id }}" @selected($application->preferences->where('preference_order', 1)->first()?->division_id == $division->id)>{{ $division->division_name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+
+                            <label class="grid gap-2 font-bold text-sm">
+                                <span>Pilihan Divisi Kedua <span class="text-xs font-normal text-neutral-500">(opsional)</span></span>
+                                <select name="second_division_id" class="border-2 border-neutral-950 bg-white px-3 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-neutral-950 transition">
+                                    <option value="">Tidak memilih divisi kedua</option>
+                                    @foreach ($application->recruitmentPeriod->organization->divisions->where('is_active', true) as $division)
+                                        <option value="{{ $division->id }}" @selected($application->preferences->where('preference_order', 2)->first()?->division_id == $division->id)>{{ $division->division_name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                        </div>
+
+                        <label class="grid gap-2 font-bold text-sm">
+                            <span>Motivasi Keikutsertaan <span class="text-red-600">*</span></span>
+                            <textarea name="motivation" rows="5" class="border-2 border-neutral-950 px-3 py-3 font-semibold placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-950 transition" placeholder="Ceritakan motivasi minimal 20 karakter." required>{{ old('motivation', $application->motivation) }}</textarea>
+                        </label>
+
+                        <div class="grid gap-4 mt-2">
+                            <h3 class="font-black uppercase tracking-wider text-sm border-b-2 border-neutral-950 pb-2">Perbarui Berkas (Kosongkan jika tidak ada perubahan)</h3>
+                            
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <label class="grid gap-2 font-bold text-sm">
+                                    <span>CV / Resume</span>
+                                    <input type="file" name="cv" accept=".pdf,.doc,.docx" class="w-full text-xs font-bold file:mr-3 file:py-1.5 file:px-3 file:border-2 file:border-neutral-950 file:bg-white file:text-xs file:font-black file:uppercase file:cursor-pointer hover:file:bg-neutral-100">
+                                </label>
+
+                                <label class="grid gap-2 font-bold text-sm">
+                                    <span>Portfolio</span>
+                                    <input type="file" name="portfolio" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs font-bold file:mr-3 file:py-1.5 file:px-3 file:border-2 file:border-neutral-950 file:bg-white file:text-xs file:font-black file:uppercase file:cursor-pointer hover:file:bg-neutral-100">
+                                </label>
+
+                                <label class="grid gap-2 font-bold text-sm">
+                                    <span>Sertifikat & Penghargaan</span>
+                                    <input type="file" name="certificate" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-xs font-bold file:mr-3 file:py-1.5 file:px-3 file:border-2 file:border-neutral-950 file:bg-white file:text-xs file:font-black file:uppercase file:cursor-pointer hover:file:bg-neutral-100">
+                                </label>
+
+                                <label class="grid gap-2 font-bold text-sm">
+                                    <span>Dokumen Tambahan Lainnya</span>
+                                    <input type="file" name="other_document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full text-xs font-bold file:mr-3 file:py-1.5 file:px-3 file:border-2 file:border-neutral-950 file:bg-white file:text-xs file:font-black file:uppercase file:cursor-pointer hover:file:bg-neutral-100">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <x-ink-button type="submit" class="px-6 py-3">Kirim Perbaikan & Ajukan Kembali</x-ink-button>
+                        </div>
+                    </form>
                 </div>
             </x-comic-panel>
         </section>
@@ -98,15 +172,7 @@
                                 <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="border-2 border-neutral-950 bg-white hover:bg-neutral-100 px-3 py-1.5 text-xs font-black uppercase tracking-wide transition shadow-[2px_2px_0_#141414] active:translate-y-0.5 active:shadow-[1px_1px_0_#141414]">
                                     Unduh
                                 </a>
-                                @if ($document->document_type !== 'cv')
-                                    <form method="POST" action="{{ route('applications.deleteDocument', [$application, $document]) }}" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Yakin ingin menghapus dokumen ini?')" class="border-2 border-red-600 bg-red-50 text-red-700 hover:bg-red-100 px-3 py-1.5 text-xs font-black uppercase tracking-wide transition shadow-[2px_2px_0_#dc2626] active:translate-y-0.5 active:shadow-[1px_1px_0_#dc2626]">
-                                            Hapus
-                                        </button>
-                                    </form>
-                                @endif
+
                             </div>
                         </div>
                     @empty
@@ -114,7 +180,7 @@
                     @endforelse
                 </div>
 
-                @if ($application->application_status === 'submitted' || $application->application_status === 'under_review')
+                @if ($application->application_status === 'submitted' || $application->application_status === 'under_review' || $application->application_status === 'interview')
                     <form method="POST" action="{{ route('applications.uploadDocument', $application) }}" enctype="multipart/form-data" class="border-t-2 border-neutral-950 pt-5 mt-5">
                         @csrf
                         <p class="font-black text-sm uppercase tracking-wide mb-3 text-neutral-900">Unggah Dokumen Tambahan</p>
@@ -156,26 +222,45 @@
         <x-comic-panel class="p-6">
             <x-section-heading eyebrow="Timeline" title="Riwayat Status" class="text-center" />
             
-            <div class="mt-8 relative border-l-4 border-neutral-950 ml-4 md:ml-8 pl-6 space-y-6">
+            <div class="mt-8 relative">
+                {{-- Center line (desktop) --}}
+                <div class="absolute left-1/2 top-0 h-full w-1 -translate-x-1/2 bg-neutral-950 hidden md:block"></div>
+                
+                {{-- Left line (mobile) --}}
+                <div class="absolute left-[7px] top-0 h-full w-1 bg-neutral-950 md:hidden"></div>
+                
                 @foreach ($application->statusHistory as $history)
-                    <div class="relative">
-                        <!-- Bulatan timeline diposisikan absolut agar presisi di tengah garis kiri -->
-                        <div class="absolute -left-[32px] top-1.5 h-4 w-4 rounded-full border-2 border-neutral-950 bg-white z-10 shadow-[2px_2px_0_#141414]"></div>
+                    @php
+                        $isUser = $history->new_status === 'submitted';
+                    @endphp
+                    
+                    <div class="relative flex items-start {{ $loop->first ? '' : 'mt-8' }}">
+                        {{-- Desktop dot (centered) --}}
+                        <div class="hidden md:block absolute left-1/2 top-1.5 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-neutral-950 bg-white z-10 shadow-[2px_2px_0_#141414]"></div>
                         
-                        <div class="comic-panel-soft p-4 inline-block min-w-[280px] md:min-w-[400px]">
-                            <div class="flex items-center justify-between gap-3">
-                                <p class="font-black text-base uppercase tracking-wider text-neutral-900">
-                                    {{ ucfirst(str_replace('_', ' ', $history->new_status)) }}
+                        {{-- Mobile dot --}}
+                        <div class="md:hidden absolute left-[7px] top-1.5 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-neutral-950 bg-white z-10 shadow-[2px_2px_0_#141414]"></div>
+                        
+                        {{-- Content: user di kiri, reviewer di kanan --}}
+                        <div class="w-full md:w-1/2 pl-8 md:pl-0 {{ $isUser ? 'md:pr-8' : 'md:ml-auto md:pl-8' }}">
+                            <div class="comic-panel-soft p-4 w-full md:w-auto">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="font-black text-base uppercase tracking-wider text-neutral-900">
+                                        {{ ucfirst(str_replace('_', ' ', $history->new_status)) }}
+                                    </p>
+                                    <span class="font-mono text-xs font-bold text-neutral-500 shrink-0">
+                                        {{ $history->changed_at->translatedFormat('d M Y H:i') }}
+                                    </span>
+                                </div>
+                                <p class="mt-1 text-xs font-bold {{ $isUser ? 'text-blue-600' : 'text-amber-600' }}">
+                                    — {{ $isUser ? 'Kamu' : 'Reviewer' }}
                                 </p>
-                                <span class="font-mono text-xs font-bold text-neutral-500">
-                                    {{ $history->changed_at->translatedFormat('d M Y H:i') }}
-                                </span>
+                                @if ($history->change_note)
+                                    <p class="mt-2 text-sm font-semibold text-neutral-700 leading-relaxed border-t border-neutral-200 pt-2">
+                                        {{ $history->change_note }}
+                                    </p>
+                                @endif
                             </div>
-                            @if ($history->change_note)
-                                <p class="mt-2 text-sm font-semibold text-neutral-700 leading-relaxed border-t border-neutral-200 pt-2">
-                                    {{ $history->change_note }}
-                                </p>
-                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -190,8 +275,7 @@
                 <p class="burst-label mb-3">Kontak</p>
                 <h2 class="text-2xl font-black">Butuh bantuan?</h2>
                 <p class="mt-3 text-sm leading-6 text-neutral-700">
-                    Semua informasi seleksi dikirim melalui email <strong>{{ $application->user->email }}</strong>.
-                    Jika tidak menerima email, hubungi organisasi terkait.
+                    Pantau informasi seleksi kamu secara berkala melalui halaman status ini. Jika ada pertanyaan, hubungi organisasi terkait.
                 </p>
                 <div class="mt-5 flex flex-wrap justify-center gap-6 text-sm font-bold">
                     @if ($application->recruitmentPeriod->organization->contact_email)

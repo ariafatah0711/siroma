@@ -49,6 +49,7 @@ class DivisionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordActionsColumnLabel('Aksi')
             ->columns([
                 Tables\Columns\TextColumn::make('organization.organization_name')->label('Organisasi')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('division_name')->label('Nama Divisi')->searchable(),
@@ -58,6 +59,19 @@ class DivisionResource extends Resource
                 EditAction::make(),
                 DeleteAction::make(),
             ]);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && !$user->hasRole('super_admin')) {
+            $myOrgIds = $user->organizationMemberships()->where('is_active', true)->pluck('organization_id')->toArray();
+            $query->whereIn('organization_id', $myOrgIds);
+        }
+
+        return $query;
     }
 
     public static function getPages(): array

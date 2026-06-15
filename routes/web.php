@@ -33,4 +33,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/pendaftaran/{application}', [ApplicationController::class, 'show'])->name('applications.show');
     Route::post('/pendaftaran/{application}/dokumen', [ApplicationController::class, 'uploadDocument'])->name('applications.uploadDocument');
     Route::delete('/pendaftaran/{application}/dokumen/{document}', [ApplicationController::class, 'deleteDocument'])->name('applications.deleteDocument');
+    Route::post('/pendaftaran/{application}/resubmit', [ApplicationController::class, 'resubmit'])->name('applications.resubmit');
 });

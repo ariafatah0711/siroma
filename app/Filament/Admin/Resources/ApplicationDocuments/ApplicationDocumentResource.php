@@ -29,6 +29,7 @@ class ApplicationDocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordActionsColumnLabel('Aksi')
             ->columns([
                 Tables\Columns\TextColumn::make('application.application_code')->label('Kode Aplikasi')->searchable(),
                 Tables\Columns\TextColumn::make('application.user.full_name')->label('Nama Pendaftar')->searchable(),

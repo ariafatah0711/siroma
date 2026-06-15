@@ -38,7 +38,8 @@ class AuthController extends Controller
             return redirect()->intended(url('/admin'));
         }
 
-        return redirect()->intended(route('recruitments.index'));
+        session()->forget('url.intended');
+        return redirect()->route('recruitments.index');
     }
 
     public function showRegister(): View

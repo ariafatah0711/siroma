@@ -81,6 +81,7 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordActionsColumnLabel('Aksi')
             ->columns([
                 Tables\Columns\TextColumn::make('student_number')
                     ->label('NIM')

@@ -9,7 +9,6 @@
         </a>
 
         <div class="hidden items-center gap-6 text-sm font-black md:flex">
-            <a href="{{ route('organizations.index') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Organisasi</a>
             <a href="{{ route('recruitments.index') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Rekrutmen</a>
             @auth
                 <a href="{{ route('profile.show') }}" class="max-w-44 truncate text-neutral-700 hover:underline hover:decoration-3 hover:underline-offset-4">{{ auth()->user()->full_name }}</a>

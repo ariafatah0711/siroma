@@ -72,7 +72,7 @@ return new class extends Migration
                 END IF;
 
                 IF p_status_filter IS NOT NULL
-                   AND p_status_filter NOT IN ('submitted', 'under_review', 'accepted', 'rejected', 'withdrawn') THEN
+                   AND p_status_filter NOT IN ('submitted', 'under_review', 'interview', 'accepted', 'rejected', 'withdrawn') THEN
                     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Filter status tidak valid.';
                 END IF;
 
@@ -239,7 +239,7 @@ return new class extends Migration
                 END;
 
                 IF p_new_status IS NULL
-                   OR p_new_status NOT IN ('submitted', 'under_review', 'accepted', 'rejected', 'withdrawn') THEN
+                   OR p_new_status NOT IN ('submitted', 'under_review', 'interview', 'accepted', 'rejected', 'withdrawn') THEN
                     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Status aplikasi tidak valid.';
                 END IF;
 
@@ -269,7 +269,7 @@ return new class extends Migration
                     final_score = p_final_score,
                     reviewer_notes = p_reviewer_notes,
                     reviewed_at = CASE
-                        WHEN p_new_status IN ('under_review', 'accepted', 'rejected') THEN CURRENT_TIMESTAMP
+                        WHEN p_new_status IN ('under_review', 'interview', 'accepted', 'rejected') THEN CURRENT_TIMESTAMP
                         ELSE reviewed_at
                     END
                 WHERE id = p_application_id;

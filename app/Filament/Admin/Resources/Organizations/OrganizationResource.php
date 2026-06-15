@@ -51,6 +51,7 @@ class OrganizationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordActionsColumnLabel('Aksi')
             ->columns([
                 Tables\Columns\TextColumn::make('organization_code')->label('Kode')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('organization_name')->label('Nama Organisasi')->searchable()->sortable(),
@@ -60,6 +61,19 @@ class OrganizationResource extends Resource
                 EditAction::make(),
                 DeleteAction::make(),
             ]);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && !$user->hasRole('super_admin')) {
+            $myOrgIds = $user->organizationMemberships()->where('is_active', true)->pluck('organization_id')->toArray();
+            $query->whereIn('id', $myOrgIds);
+        }
+
+        return $query;
     }
 
     public static function getPages(): array

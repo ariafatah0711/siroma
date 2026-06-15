@@ -73,6 +73,37 @@ class ApplicationResource extends Resource
                             ->content(fn ($record) => $record?->motivation),
                     ]),
 
+                Forms\Components\Section::make('Dokumen Berkas')
+                    ->schema(function ($record) {
+                        if (!$record) return [];
+
+                        if ($record->application_status === 'submitted') {
+                            return [
+                                Forms\Components\Placeholder::make('docs_locked')
+                                    ->label('')
+                                    ->content('🔒 Berkas belum dapat diperiksa. Silakan klik tombol "Mulai Seleksi" terlebih dahulu untuk memeriksa berkas pendaftar.')
+                            ];
+                        }
+
+                        $components = [];
+                        foreach ($record->documents as $doc) {
+                            $url = asset('storage/' . $doc->file_path);
+                            $components[] = Forms\Components\Placeholder::make('doc_' . $doc->id)
+                                ->label(strtoupper($doc->document_type))
+                                ->content(fn() => new \Illuminate\Support\HtmlString("<a href='{$url}' target='_blank' style='color: #d97706; font-weight: bold; text-decoration: underline;'>Unduh {$doc->original_file_name}</a>"));
+                        }
+
+                        if (empty($components)) {
+                            return [
+                                Forms\Components\Placeholder::make('no_docs')
+                                    ->label('')
+                                    ->content('Tidak ada dokumen yang diunggah.')
+                            ];
+                        }
+
+                        return $components;
+                    }),
+
                 Forms\Components\Section::make('Status & Penilaian')
                     ->schema([
                         Forms\Components\Placeholder::make('application_status')
@@ -80,6 +111,7 @@ class ApplicationResource extends Resource
                             ->content(fn ($record) => match ($record?->application_status) {
                                 'submitted'    => '⏳ Menunggu Seleksi',
                                 'under_review' => '🔍 Sedang Diseleksi',
+                                'interview'    => '📅 Tahap Wawancara',
                                 'accepted'     => '✅ Diterima',
                                 'rejected'     => '❌ Ditolak',
                                 'withdrawn'    => '↩️ Mengundurkan Diri',
@@ -101,6 +133,7 @@ class ApplicationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordActionsColumnLabel('Aksi')
             ->columns([
                 Tables\Columns\TextColumn::make('application_code')
                     ->label('Kode')
@@ -132,8 +165,9 @@ class ApplicationResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'accepted'     => 'success',
+                        'interview'    => 'warning',
                         'under_review' => 'info',
-                        'submitted'    => 'warning',
+                        'submitted'    => 'gray',
                         'rejected'     => 'danger',
                         'withdrawn'    => 'gray',
                         default        => 'secondary',
@@ -141,6 +175,7 @@ class ApplicationResource extends Resource
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'submitted'    => 'Menunggu',
                         'under_review' => 'Diseleksi',
+                        'interview'    => 'Wawancara',
                         'accepted'     => 'Diterima',
                         'rejected'     => 'Ditolak',
                         'withdrawn'    => 'Mundur',
@@ -163,6 +198,7 @@ class ApplicationResource extends Resource
                     ->options([
                         'submitted'    => 'Menunggu Seleksi',
                         'under_review' => 'Sedang Diseleksi',
+                        'interview'    => 'Tahap Wawancara',
                         'accepted'     => 'Diterima',
                         'rejected'     => 'Ditolak',
                         'withdrawn'    => 'Mengundurkan Diri',
@@ -206,12 +242,43 @@ class ApplicationResource extends Resource
                         }
                     }),
 
-                // Action: Terima (under_review → accepted)
+                // Action: Loloskan Berkas & Wawancara (under_review → interview)
+                Action::make('lolos_berkas')
+                    ->label('Lolos Berkas & Wawancara')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->color('warning')
+                    ->visible(fn (Application $record) => $record->application_status === 'under_review')
+                    ->requiresConfirmation()
+                    ->modalHeading('Loloskan Berkas & Wawancara?')
+                    ->modalDescription(fn (Application $record) => "Pendaftar: {$record->user?->full_name} ({$record->application_code}) dinyatakan lolos berkas dan akan masuk ke tahap wawancara.")
+                    ->modalSubmitActionLabel('Ya, Loloskan Berkas')
+                    ->action(function (Application $record): void {
+                        try {
+                            DB::statement('CALL sp_update_application_status(?, ?, ?, ?)', [
+                                $record->id,
+                                'interview',
+                                null,
+                                'Berkas dinyatakan lolos. Pendaftar masuk ke tahap wawancara.',
+                            ]);
+                            Notification::make()
+                                ->title('Status berhasil diubah ke "Wawancara"')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Gagal mengubah status')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+
+                // Action: Terima (interview → accepted)
                 Action::make('terima')
                     ->label('Terima')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (Application $record) => $record->application_status === 'under_review')
+                    ->visible(fn (Application $record) => $record->application_status === 'interview')
                     ->form([
                         Forms\Components\TextInput::make('final_score')
                             ->label('Nilai Akhir (0–100)')
@@ -248,12 +315,12 @@ class ApplicationResource extends Resource
                         }
                     }),
 
-                // Action: Tolak (under_review → rejected)
+                // Action: Tolak (interview → rejected)
                 Action::make('tolak')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (Application $record) => $record->application_status === 'under_review')
+                    ->visible(fn (Application $record) => $record->application_status === 'interview')
                     ->form([
                         Forms\Components\TextInput::make('final_score')
                             ->label('Nilai Akhir (0–100)')
@@ -326,6 +393,21 @@ class ApplicationResource extends Resource
                         }
                     }),
             ]);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && !$user->hasRole('super_admin')) {
+            $myOrgIds = $user->organizationMemberships()->where('is_active', true)->pluck('organization_id')->toArray();
+            $query->whereHas('recruitmentPeriod', function ($q) use ($myOrgIds) {
+                $q->whereIn('organization_id', $myOrgIds);
+            });
+        }
+
+        return $query;
     }
 
     public static function getPages(): array
