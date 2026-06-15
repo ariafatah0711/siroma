@@ -31,4 +31,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/rekrutmen/{period}/daftar', [RecruitmentController::class, 'apply'])->name('recruitments.apply');
     Route::post('/rekrutmen/{period}/daftar', [ApplicationController::class, 'store'])->name('applications.store');
     Route::get('/pendaftaran/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::post('/pendaftaran/{application}/dokumen', [ApplicationController::class, 'uploadDocument'])->name('applications.uploadDocument');
+    Route::delete('/pendaftaran/{application}/dokumen/{document}', [ApplicationController::class, 'deleteDocument'])->name('applications.deleteDocument');
 });

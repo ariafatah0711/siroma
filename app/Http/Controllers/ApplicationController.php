@@ -84,4 +84,63 @@ class ApplicationController extends Controller
             'application' => $application,
         ]);
     }
+
+    public function uploadDocument(Request $request, Application $application): RedirectResponse
+    {
+        $user = request()->user();
+
+        abort_unless(
+            $user && $application->user_id === $user->id,
+            403
+        );
+
+        $validated = $request->validate([
+            'document_type' => ['required', 'string', 'in:cv,portfolio,certificate,transcript,other'],
+            'document' => ['required', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'],
+        ]);
+
+        $document = $request->file('document');
+        $path = $document->store("applications/{$application->id}", 'public');
+
+        ApplicationDocument::create([
+            'application_id' => $application->id,
+            'document_type' => $validated['document_type'],
+            'original_file_name' => $document->getClientOriginalName(),
+            'file_path' => $path,
+        ]);
+
+        return redirect()
+            ->route('applications.show', $application)
+            ->with('status', 'Dokumen berhasil diunggah.');
+    }
+
+    public function deleteDocument(Request $request, Application $application, ApplicationDocument $document): RedirectResponse
+    {
+        $user = request()->user();
+
+        abort_unless(
+            $user && $application->user_id === $user->id,
+            403
+        );
+
+        abort_unless($document->application_id === $application->id, 404);
+
+        // Don't allow deleting CV
+        if ($document->document_type === 'cv') {
+            return redirect()
+                ->route('applications.show', $application)
+                ->with('error', 'Tidak bisa menghapus dokumen CV.');
+        }
+
+        $path = storage_path('app/public/' . $document->file_path);
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
+        $document->delete();
+
+        return redirect()
+            ->route('applications.show', $application)
+            ->with('status', 'Dokumen berhasil dihapus.');
+    }
 }

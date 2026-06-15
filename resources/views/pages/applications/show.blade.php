@@ -1,6 +1,18 @@
 @extends('layouts.public', ['title' => 'Status Pendaftaran '.$application->application_code.' - SIROMA'])
 
 @section('content')
+    @if (session('status'))
+        <div class="mb-8 border-3 border-green-800 bg-green-50 p-4 text-sm font-bold text-green-900 shadow-[5px_5px_0_#166534]">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-8 border-3 border-red-800 bg-red-50 p-4 text-sm font-bold text-red-900 shadow-[5px_5px_0_#991b1b]">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <x-comic-panel class="relative overflow-hidden p-6 md:p-8">
         <div class="speed-lines absolute inset-0 opacity-20"></div>
         <div class="relative">
@@ -65,19 +77,61 @@
         <section>
             <x-comic-panel class="p-5">
                 <p class="burst-label mb-4">Dokumen</p>
-                <div class="grid gap-3">
+                <div class="grid gap-3 mb-5">
                     @forelse ($application->documents as $document)
-                        <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="comic-panel-soft flex items-center justify-between gap-3 p-4 hover:bg-neutral-100">
-                            <span>
-                                <span class="font-black uppercase">{{ $document->document_type }}</span>
-                                <span class="ml-2 text-sm text-neutral-700">{{ $document->original_file_name }}</span>
-                            </span>
-                            <span class="shrink-0 border-2 border-neutral-950 bg-white px-2 py-1 text-xs font-black uppercase">Unduh</span>
-                        </a>
+                        <div class="comic-panel-soft flex items-center justify-between gap-3 p-4 group">
+                            <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="flex-1 flex items-center justify-between gap-3 hover:bg-neutral-100 cursor-pointer">
+                                <span>
+                                    <span class="font-black uppercase">{{ $document->document_type }}</span>
+                                    <span class="ml-2 text-sm text-neutral-700">{{ $document->original_file_name }}</span>
+                                </span>
+                                <span class="shrink-0 border-2 border-neutral-950 bg-white px-2 py-1 text-xs font-black uppercase">Unduh</span>
+                            </a>
+                            @if ($document->document_type !== 'cv')
+                                <form method="POST" action="{{ route('applications.deleteDocument', [$application, $document]) }}" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus dokumen ini?')" class="px-2 py-1 text-xs font-black uppercase border-2 border-red-500 bg-red-50 text-red-700 hover:bg-red-100 transition">Hapus</button>
+                                </form>
+                            @endif
+                        </div>
                     @empty
-                        <p class="text-sm font-semibold text-neutral-700">Belum ada dokumen yang tercatat.</p>
+                        <p class="text-sm font-semibold text-neutral-700">Belum ada dokumen tambahan yang diunggah.</p>
                     @endforelse
                 </div>
+
+                @if ($application->application_status === 'submitted' || $application->application_status === 'under_review')
+                    <form method="POST" action="{{ route('applications.uploadDocument', $application) }}" enctype="multipart/form-data" class="border-t-2 border-neutral-950 pt-4 mt-4">
+                        @csrf
+                        <p class="font-bold text-sm mb-3">Unggah Dokumen Tambahan</p>
+                        <div class="grid gap-3">
+                            <label class="grid gap-2 font-bold text-sm">
+                                Tipe Dokumen
+                                <select name="document_type" required class="border-2 border-neutral-950 bg-white px-3 py-2 text-sm">
+                                    <option value="">Pilih tipe dokumen</option>
+                                    <option value="cv">CV</option>
+                                    <option value="portfolio">Portfolio</option>
+                                    <option value="certificate">Sertifikat</option>
+                                    <option value="transcript">Transkrip Nilai</option>
+                                    <option value="other">Lainnya</option>
+                                </select>
+                                @error('document_type')
+                                    <span class="text-xs text-red-600">{{ $message }}</span>
+                                @enderror
+                            </label>
+
+                            <label class="grid gap-2 font-bold text-sm">
+                                File (PDF, DOC, DOCX, JPG, PNG - Max 10MB)
+                                <input type="file" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="border-2 border-neutral-950 bg-white px-3 py-2 text-sm">
+                                @error('document')
+                                    <span class="text-xs text-red-600">{{ $message }}</span>
+                                @enderror
+                            </label>
+
+                            <button type="submit" class="border-2 border-neutral-950 bg-white px-3 py-2 text-sm font-bold uppercase hover:bg-neutral-100 transition">Upload Dokumen</button>
+                        </div>
+                    </form>
+                @endif
             </x-comic-panel>
         </section>
     </div>

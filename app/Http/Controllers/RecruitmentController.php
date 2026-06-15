@@ -12,20 +12,41 @@ class RecruitmentController extends Controller
 {
     public function index(Request $request): View
     {
-        $recruitments = RecruitmentPeriod::query()
+        $query = RecruitmentPeriod::query()
             ->with('organization')
-            ->withCount('applications')
-            ->when($request->filled('organization'), function ($query) use ($request) {
-                $query->where('organization_id', $request->integer('organization'));
-            })
+            ->withCount('applications');
+
+        // Filter by organization
+        if ($request->filled('organization')) {
+            $query->where('organization_id', $request->integer('organization'));
+        }
+
+        // Search by title or organization name
+        if ($request->filled('search')) {
+            $search = $request->string('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('recruitment_title', 'like', "%{$search}%")
+                  ->orWhereHas('organization', fn ($q) => $q->where('organization_name', 'like', "%{$search}%"));
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('recruitment_status', $request->string('status'));
+        }
+
+        $recruitments = $query
             ->orderByRaw("FIELD(recruitment_status, 'open', 'draft', 'closed', 'completed')")
             ->orderBy('registration_end_date')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('pages.recruitments.index', [
             'organizations' => Organization::orderBy('organization_name')->get(),
             'recruitments' => $recruitments,
             'selectedOrganization' => $request->integer('organization') ?: null,
+            'searchQuery' => $request->string('search') ?: null,
+            'selectedStatus' => $request->string('status') ?: null,
         ]);
     }
 
