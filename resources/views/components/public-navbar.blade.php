@@ -21,11 +21,18 @@
                 <a href="{{ route('login') }}" class="hover:underline hover:decoration-3 hover:underline-offset-4">Login</a>
                 <a href="{{ route('register') }}" class="ink-button ink-button-primary px-4 py-2 text-sm">Register</a>
             @endauth
-            <a href="{{ url('/admin') }}" class="ink-button ink-button-secondary px-4 py-2 text-sm">Panel Admin</a>
+            @auth
+                @if(auth()->user()->hasAnyRole(['super_admin', 'reviewer']))
+                    <a href="{{ url('/admin') }}" class="ink-button ink-button-secondary px-4 py-2 text-sm">Panel Admin</a>
+                @endif
+            @endauth
         </div>
 
         <div class="flex items-center gap-2 md:hidden">
             @auth
+                @if(auth()->user()->hasAnyRole(['super_admin', 'reviewer']))
+                    <a href="{{ url('/admin') }}" class="ink-button ink-button-secondary px-3 py-2 text-xs">Admin</a>
+                @endif
                 <a href="{{ route('profile.show') }}" class="ink-button ink-button-primary px-3 py-2 text-xs">Profil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

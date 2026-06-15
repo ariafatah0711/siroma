@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Filament\Admin\Resources;
+namespace App\Filament\Admin\Resources\Organizations;
 
 use App\Filament\Admin\Resources\Organizations\Pages;
 use App\Models\Organization;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
-use Filament\Schemas\Schema; // Menggunakan Schema untuk v5
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -16,17 +18,33 @@ class OrganizationResource extends Resource
     protected static ?string $model = Organization::class;
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $recordTitleAttribute = 'organization_name';
+    protected static ?string $navigationLabel = 'Organisasi';
+    protected static ?string $modelLabel = 'Organisasi';
+    protected static ?string $pluralModelLabel = 'Organisasi';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Forms\Components\TextInput::make('organization_code')
+                    ->label('Kode Organisasi')
                     ->required()
                     ->maxLength(50),
                 Forms\Components\TextInput::make('organization_name')
+                    ->label('Nama Organisasi')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('contact_email')
+                    ->label('Email Kontak')
+                    ->email()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('contact_phone')
+                    ->label('Telepon Kontak')
+                    ->maxLength(20),
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi')
+                    ->rows(4),
             ]);
     }
 
@@ -34,12 +52,13 @@ class OrganizationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('organization_code')->searchable(),
-                Tables\Columns\TextColumn::make('organization_name')->searchable(),
+                Tables\Columns\TextColumn::make('organization_code')->label('Kode')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('organization_name')->label('Nama Organisasi')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('contact_email')->label('Email')->searchable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ]);
     }
 

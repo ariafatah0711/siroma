@@ -69,6 +69,11 @@ class User extends Authenticatable
             || $this->can('manage recruitment periods for organization '.$organization->id);
     }
 
+    public function getNameAttribute(): string
+    {
+        return $this->full_name;
+    }
+
     /**
      * Get the attributes that should be cast.
      *

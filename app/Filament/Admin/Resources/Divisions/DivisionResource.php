@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Filament\Admin\Resources;
+namespace App\Filament\Admin\Resources\Divisions;
 
 use App\Filament\Admin\Resources\Divisions\Pages;
 use App\Models\Division;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms;
-use Filament\Schemas\Schema; // Menggunakan Schema untuk v5
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -16,19 +18,31 @@ class DivisionResource extends Resource
     protected static ?string $model = Division::class;
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-group';
     protected static ?string $recordTitleAttribute = 'division_name';
+    protected static ?string $navigationLabel = 'Divisi';
+    protected static ?string $modelLabel = 'Divisi';
+    protected static ?string $pluralModelLabel = 'Divisi';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Forms\Components\Select::make('organization_id')
+                    ->label('Organisasi')
                     ->relationship('organization', 'organization_name')
                     ->required()
                     ->searchable()
                     ->preload(),
                 Forms\Components\TextInput::make('division_name')
+                    ->label('Nama Divisi')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi')
+                    ->rows(3),
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Aktif')
+                    ->default(true),
             ]);
     }
 
@@ -38,10 +52,11 @@ class DivisionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('organization.organization_name')->label('Organisasi')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('division_name')->label('Nama Divisi')->searchable(),
+                Tables\Columns\IconColumn::make('is_active')->label('Aktif')->boolean(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ]);
     }
 

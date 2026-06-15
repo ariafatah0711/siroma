@@ -24,6 +24,7 @@ php artisan key:generate
 npm install
 
 # Buat tabel dan data awal
+php artisan migrate:fresh
 php artisan migrate --seed
 
 # Dibutuhkan untuk upload dokumen publik

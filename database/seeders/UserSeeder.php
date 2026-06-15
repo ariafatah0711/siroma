@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -111,5 +112,23 @@ class UserSeeder extends Seeder
                 'is_active' => true,
             ],
         ]);
+
+        // Assign Spatie Roles to seeded users
+        $admin = User::find(1);
+        if ($admin) {
+            $admin->assignRole('super_admin');
+        }
+
+        $reviewer = User::find(2);
+        if ($reviewer) {
+            $reviewer->assignRole('reviewer');
+        }
+
+        foreach (range(3, 8) as $id) {
+            $user = User::find($id);
+            if ($user) {
+                $user->assignRole('applicant');
+            }
+        }
     }
 }

@@ -61,39 +61,53 @@
 
     <div class="mt-10 grid gap-10 md:grid-cols-2">
         <section>
-            <x-comic-panel class="p-5">
-                <p class="burst-label mb-4">Pilihan Divisi</p>
-                <ol class="grid gap-3">
-                    @foreach ($application->preferences as $preference)
-                        <li class="comic-panel-soft flex items-center gap-4 p-4">
-                            <span class="grid h-10 w-10 shrink-0 place-items-center border-2 border-neutral-950 bg-white text-lg font-black">{{ $preference->preference_order }}</span>
-                            <span class="font-bold">{{ $preference->division->division_name }}</span>
-                        </li>
-                    @endforeach
-                </ol>
+            <x-comic-panel class="p-6 h-full flex flex-col justify-between">
+                <div>
+                    <p class="burst-label mb-5">Pilihan Divisi</p>
+                    <ol class="grid gap-4">
+                        @foreach ($application->preferences as $preference)
+                            <li class="comic-panel-soft flex items-center gap-4 p-4">
+                                <span class="grid h-10 w-10 shrink-0 place-items-center border-2 border-neutral-950 bg-white text-lg font-black">{{ $preference->preference_order }}</span>
+                                <span class="font-black text-neutral-900">{{ $preference->division->division_name }}</span>
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
+                <div class="mt-6 p-4 border-2 border-neutral-950 bg-neutral-50 font-semibold text-sm leading-relaxed">
+                    <p class="font-black text-xs uppercase tracking-wider text-neutral-500 mb-1">Motivasi Kamu:</p>
+                    <p class="text-neutral-800">"{{ $application->motivation }}"</p>
+                </div>
             </x-comic-panel>
         </section>
 
         <section>
-            <x-comic-panel class="p-5">
-                <p class="burst-label mb-4">Dokumen</p>
+            <x-comic-panel class="p-6">
+                <p class="burst-label mb-5">Dokumen Berkas</p>
                 <div class="grid gap-3 mb-5">
                     @forelse ($application->documents as $document)
-                        <div class="comic-panel-soft flex items-center justify-between gap-3 p-4 group">
-                            <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="flex-1 flex items-center justify-between gap-3 hover:bg-neutral-100 cursor-pointer">
-                                <span>
-                                    <span class="font-black uppercase">{{ $document->document_type }}</span>
-                                    <span class="ml-2 text-sm text-neutral-700">{{ $document->original_file_name }}</span>
+                        <div class="comic-panel-soft flex flex-wrap items-center justify-between gap-3 p-4">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <div class="border-2 border-neutral-950 bg-white px-2 py-1 text-xs font-black uppercase tracking-wider shrink-0 shadow-[2px_2px_0_#141414]">
+                                    {{ $document->document_type }}
+                                </div>
+                                <span class="text-sm font-bold text-neutral-800 truncate" title="{{ $document->original_file_name }}">
+                                    {{ $document->original_file_name }}
                                 </span>
-                                <span class="shrink-0 border-2 border-neutral-950 bg-white px-2 py-1 text-xs font-black uppercase">Unduh</span>
-                            </a>
-                            @if ($document->document_type !== 'cv')
-                                <form method="POST" action="{{ route('applications.deleteDocument', [$application, $document]) }}" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Yakin ingin menghapus dokumen ini?')" class="px-2 py-1 text-xs font-black uppercase border-2 border-red-500 bg-red-50 text-red-700 hover:bg-red-100 transition">Hapus</button>
-                                </form>
-                            @endif
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="{{ asset('storage/'.$document->file_path) }}" target="_blank" class="border-2 border-neutral-950 bg-white hover:bg-neutral-100 px-3 py-1.5 text-xs font-black uppercase tracking-wide transition shadow-[2px_2px_0_#141414] active:translate-y-0.5 active:shadow-[1px_1px_0_#141414]">
+                                    Unduh
+                                </a>
+                                @if ($document->document_type !== 'cv')
+                                    <form method="POST" action="{{ route('applications.deleteDocument', [$application, $document]) }}" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" onclick="return confirm('Yakin ingin menghapus dokumen ini?')" class="border-2 border-red-600 bg-red-50 text-red-700 hover:bg-red-100 px-3 py-1.5 text-xs font-black uppercase tracking-wide transition shadow-[2px_2px_0_#dc2626] active:translate-y-0.5 active:shadow-[1px_1px_0_#dc2626]">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                     @empty
                         <p class="text-sm font-semibold text-neutral-700">Belum ada dokumen tambahan yang diunggah.</p>
@@ -101,15 +115,14 @@
                 </div>
 
                 @if ($application->application_status === 'submitted' || $application->application_status === 'under_review')
-                    <form method="POST" action="{{ route('applications.uploadDocument', $application) }}" enctype="multipart/form-data" class="border-t-2 border-neutral-950 pt-4 mt-4">
+                    <form method="POST" action="{{ route('applications.uploadDocument', $application) }}" enctype="multipart/form-data" class="border-t-2 border-neutral-950 pt-5 mt-5">
                         @csrf
-                        <p class="font-bold text-sm mb-3">Unggah Dokumen Tambahan</p>
-                        <div class="grid gap-3">
-                            <label class="grid gap-2 font-bold text-sm">
-                                Tipe Dokumen
-                                <select name="document_type" required class="border-2 border-neutral-950 bg-white px-3 py-2 text-sm">
+                        <p class="font-black text-sm uppercase tracking-wide mb-3 text-neutral-900">Unggah Dokumen Tambahan</p>
+                        <div class="grid gap-4">
+                            <label class="grid gap-2 font-bold text-xs">
+                                <span>TIPE DOKUMEN</span>
+                                <select name="document_type" required class="border-2 border-neutral-950 bg-white px-3 py-2.5 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-neutral-950 transition">
                                     <option value="">Pilih tipe dokumen</option>
-                                    <option value="cv">CV</option>
                                     <option value="portfolio">Portfolio</option>
                                     <option value="certificate">Sertifikat</option>
                                     <option value="transcript">Transkrip Nilai</option>
@@ -120,15 +133,17 @@
                                 @enderror
                             </label>
 
-                            <label class="grid gap-2 font-bold text-sm">
-                                File (PDF, DOC, DOCX, JPG, PNG - Max 10MB)
-                                <input type="file" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="border-2 border-neutral-950 bg-white px-3 py-2 text-sm">
+                            <label class="grid gap-2 font-bold text-xs">
+                                <span>PILIH BERKAS (PDF, JPG, PNG, DOCX - MAX 10MB)</span>
+                                <input type="file" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="border-2 border-neutral-950 bg-white px-3 py-2 font-semibold text-sm file:mr-2 file:py-1 file:px-2 file:border-2 file:border-neutral-950 file:bg-white file:text-xs file:font-black file:uppercase file:cursor-pointer hover:file:bg-neutral-50">
                                 @error('document')
                                     <span class="text-xs text-red-600">{{ $message }}</span>
                                 @enderror
                             </label>
 
-                            <button type="submit" class="border-2 border-neutral-950 bg-white px-3 py-2 text-sm font-bold uppercase hover:bg-neutral-100 transition">Upload Dokumen</button>
+                            <button type="submit" class="border-2 border-neutral-950 bg-white px-4 py-2.5 text-sm font-black uppercase hover:bg-neutral-100 transition shadow-[3px_3px_0_#141414] active:translate-y-0.5 active:shadow-[1px_1px_0_#141414] cursor-pointer">
+                                Upload Dokumen
+                            </button>
                         </div>
                     </form>
                 @endif
@@ -136,23 +151,35 @@
         </section>
     </div>
 
+    {{-- Riwayat Status --}}
     <section class="mt-10">
-        <x-comic-panel class="p-5">
+        <x-comic-panel class="p-6">
             <x-section-heading eyebrow="Timeline" title="Riwayat Status" class="text-center" />
-            <ol class="mt-6 grid gap-4">
+            
+            <div class="mt-8 relative border-l-4 border-neutral-950 ml-4 md:ml-8 pl-6 space-y-6">
                 @foreach ($application->statusHistory as $history)
-                    <li class="relative grid gap-3 border-l-4 border-neutral-950 pl-5">
-                        <div class="absolute -left-[11px] top-1 h-4 w-4 rounded-full border-2 border-neutral-950 bg-white"></div>
-                        <div class="grid gap-1">
-                            <p class="font-black">{{ ucfirst(str_replace('_', ' ', $history->new_status)) }}</p>
+                    <div class="relative">
+                        <!-- Bulatan timeline diposisikan absolut agar presisi di tengah garis kiri -->
+                        <div class="absolute -left-[32px] top-1.5 h-4 w-4 rounded-full border-2 border-neutral-950 bg-white z-10 shadow-[2px_2px_0_#141414]"></div>
+                        
+                        <div class="comic-panel-soft p-4 inline-block min-w-[280px] md:min-w-[400px]">
+                            <div class="flex items-center justify-between gap-3">
+                                <p class="font-black text-base uppercase tracking-wider text-neutral-900">
+                                    {{ ucfirst(str_replace('_', ' ', $history->new_status)) }}
+                                </p>
+                                <span class="font-mono text-xs font-bold text-neutral-500">
+                                    {{ $history->changed_at->translatedFormat('d M Y H:i') }}
+                                </span>
+                            </div>
                             @if ($history->change_note)
-                                <p class="text-sm text-neutral-700">{{ $history->change_note }}</p>
+                                <p class="mt-2 text-sm font-semibold text-neutral-700 leading-relaxed border-t border-neutral-200 pt-2">
+                                    {{ $history->change_note }}
+                                </p>
                             @endif
-                            <p class="text-xs font-bold text-neutral-600">{{ $history->changed_at->translatedFormat('d M Y H:i') }}</p>
                         </div>
-                    </li>
+                    </div>
                 @endforeach
-            </ol>
+            </div>
         </x-comic-panel>
     </section>
 
@@ -168,10 +195,10 @@
                 </p>
                 <div class="mt-5 flex flex-wrap justify-center gap-6 text-sm font-bold">
                     @if ($application->recruitmentPeriod->organization->contact_email)
-                        <span class="border-2 border-neutral-950 bg-white px-3 py-2">Email: {{ $application->recruitmentPeriod->organization->contact_email }}</span>
+                        <span class="border-2 border-neutral-950 bg-white px-3 py-2 shadow-[3px_3px_0_#141414]">Email: {{ $application->recruitmentPeriod->organization->contact_email }}</span>
                     @endif
                     @if ($application->recruitmentPeriod->organization->contact_phone)
-                        <span class="border-2 border-neutral-950 bg-white px-3 py-2">Telp: {{ $application->recruitmentPeriod->organization->contact_phone }}</span>
+                        <span class="border-2 border-neutral-950 bg-white px-3 py-2 shadow-[3px_3px_0_#141414]">Telp: {{ $application->recruitmentPeriod->organization->contact_phone }}</span>
                     @endif
                 </div>
             </div>

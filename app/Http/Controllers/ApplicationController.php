@@ -17,10 +17,13 @@ class ApplicationController extends Controller
     public function store(Request $request, RecruitmentPeriod $period): RedirectResponse
     {
         $validated = $request->validate([
-            'first_division_id' => ['required', 'integer', 'exists:divisions,id'],
+            'first_division_id'  => ['required', 'integer', 'exists:divisions,id'],
             'second_division_id' => ['nullable', 'integer', 'different:first_division_id', 'exists:divisions,id'],
-            'motivation' => ['required', 'string', 'min:20'],
-            'cv' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
+            'motivation'         => ['required', 'string', 'min:20'],
+            'cv'                 => ['required', 'file', 'mimes:pdf,doc,docx', 'max:5120'],
+            'portfolio'          => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'certificate'        => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'other_document'     => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:10240'],
         ]);
 
         $existing = $period->applications()->where('user_id', $request->user()->id)->first();
@@ -40,15 +43,26 @@ class ApplicationController extends Controller
         ]);
         $applicationId = DB::selectOne('SELECT @new_application_id AS id')->id;
 
-        $cv = $request->file('cv');
-        $path = $cv->store("applications/{$applicationId}", 'public');
+        // Simpan semua dokumen yang dikirim sekaligus
+        $docMap = [
+            'cv'             => 'cv',
+            'portfolio'      => 'portfolio',
+            'certificate'    => 'certificate',
+            'other_document' => 'other',
+        ];
 
-        ApplicationDocument::create([
-            'application_id' => $applicationId,
-            'document_type' => 'cv',
-            'original_file_name' => $cv->getClientOriginalName(),
-            'file_path' => $path,
-        ]);
+        foreach ($docMap as $inputName => $docType) {
+            $file = $request->file($inputName);
+            if (!$file) continue;
+
+            $path = $file->store("applications/{$applicationId}", 'public');
+            ApplicationDocument::create([
+                'application_id'     => $applicationId,
+                'document_type'      => $docType,
+                'original_file_name' => $file->getClientOriginalName(),
+                'file_path'          => $path,
+            ]);
+        }
 
         $application = Application::with('user', 'recruitmentPeriod.organization')->findOrFail($applicationId);
 
