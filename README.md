@@ -39,15 +39,13 @@ php artisan serve
 
 ---
 
-## Setup Production
+## Setup Production (masih gagal di InfinityFree)
 - Login ke InfinityFree, buat akun hosting baru.
 - Masuk ke Control Panel (cPanel) mereka.
 - Buka MySQL Databases, bikin database baru (misal: epiz_xxx_siroma_db). Catat detail DB Host, User, dan Password-nya.
 - Buka Online File Manager, lu bakal nemu folder bernama htdocs.
-
-```bash
-
-```
+- buat zip dari project ini lalu upload ke htdocs, terus extract.
+- Buka file `.env` di htdocs, ubah konfigurasi database sesuai dengan yang dibuat di InfinityFree.
 
 ---
 
