@@ -3,7 +3,7 @@ name: Deploy SIROMA to InfinityFree
 on:
   push:
     branches:
-      - main # atau master, sesuaikan dengan branch lu
+      - main # sesuaikan dengan branch utama lu
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2' # Sesuaikan dengan versi PHP di InfinityFree lu
+        php-version: '8.3' # <--- SUDAH DIUBAH KE 8.3 BIAR COCOK SAMA FILAMENT 5 & SPATIE 8
 
     - name: Install Composer Dependencies
       run: composer install --no-dev --optimize-autoloader
@@ -42,4 +42,4 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./
-        server-dir: /htdocs/ # Otomatis masuk ke htdocs InfinityFree
+        server-dir: /htdocs/
