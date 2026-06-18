@@ -1,4 +1,4 @@
-name: Deploy SIROMA Otomatis & Cepat
+name: Deploy SIROMA via LFTP (Tanpa Zip)
 
 on:
   push:
@@ -26,33 +26,23 @@ jobs:
         npm install
         npm run build
 
-    - name: Prepare Laravel Structure
+    - name: Prepare Laravel Structure for Shared Hosting
       run: |
+        # Amankan file public ke root agar terbaca oleh InfinityFree
         mv public/* . || true
         rm -rf public
         sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/vendor/autoload.php'|g" index.php
         sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/bootstrap/app.php'|g" index.php
 
-    - name: Compress Project to Zip
-      run: zip -r project.zip . -x ".git/*" ".github/*" "node_modules/*"
+    - name: Install LFTP Tool
+      run: sudo apt-get update && sudo apt-get install -y lftp
 
-    - name: Upload Zip & Extractor via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./
-        server-dir: /htdocs/
-        # Menggunakan fitur filter bawaan action GitHub untuk hanya mengirim 2 file ini
-        exclude: |
-          **
-          !project.zip
-          !extractor.php
-
-    # --- INI TOOL TAMBAHAN OTOMATISASI DI GITHUB ---
-    # GitHub bakal otomatis "manggil" script extractor di web lu, jadi lu tinggal terima beres!
-    - name: Trigger Remote Unzip Command
+    - name: Deploy to InfinityFree via LFTP Mirror
       run: |
-        echo "Memicu pengekstrakan di server InfinityFree..."
-        curl -s http://siroma.free.nf/extractor.php
+        lftp -e "
+        set ftp:ssl-allow no;
+        set ftp:passive-mode true;
+        open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' ftpupload.net;
+        mirror -R --delete --parallel=10 --exclude=.git/ --exclude=.github/ --exclude=node_modules/ ./ /htdocs/;
+        quit;
+        "
