@@ -1,9 +1,9 @@
-name: Deploy SIROMA Otomatis & Cepat
+name: Deploy SIROMA to InfinityFree
 
 on:
   push:
     branches:
-      - main
+      - main # sesuaikan dengan branch utama lu
 
 jobs:
   deploy:
@@ -16,7 +16,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.3'
+        php-version: '8.3' # <--- SUDAH DIUBAH KE 8.3 BIAR COCOK SAMA FILAMENT 5 & SPATIE 8
 
     - name: Install Composer Dependencies
       run: composer install --no-dev --optimize-autoloader
@@ -26,17 +26,16 @@ jobs:
         npm install
         npm run build
 
-    - name: Prepare Laravel Structure
+    - name: Prepare Laravel for Shared Hosting
       run: |
-        mv public/* . || true
+        # Membantu bypass folder public di shared hosting gratisan
+        mv public/* .
         rm -rf public
+        # Ubah index.php agar mengarah ke path yang benar
         sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/vendor/autoload.php'|g" index.php
         sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/bootstrap/app.php'|g" index.php
 
-    - name: Compress Project to Zip
-      run: zip -r project.zip . -x ".git/*" ".github/*" "node_modules/*"
-
-    - name: Upload Zip & Extractor via FTP
+    - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.FTP_SERVER }}
@@ -44,15 +43,3 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./
         server-dir: /htdocs/
-        # Menggunakan fitur filter bawaan action GitHub untuk hanya mengirim 2 file ini
-        exclude: |
-          **
-          !project.zip
-          !extractor.php
-
-    # --- INI TOOL TAMBAHAN OTOMATISASI DI GITHUB ---
-    # GitHub bakal otomatis "manggil" script extractor di web lu, jadi lu tinggal terima beres!
-    - name: Trigger Remote Unzip Command
-      run: |
-        echo "Memicu pengekstrakan di server InfinityFree..."
-        curl -s http://siroma.free.nf/extractor.php
