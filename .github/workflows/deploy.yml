@@ -1,0 +1,45 @@
+name: Deploy SIROMA to InfinityFree
+
+on:
+  push:
+    branches:
+      - main # atau master, sesuaikan dengan branch lu
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2' # Sesuaikan dengan versi PHP di InfinityFree lu
+
+    - name: Install Composer Dependencies
+      run: composer install --no-dev --optimize-autoloader
+
+    - name: Install Node Dependencies & Build Assets
+      run: |
+        npm install
+        npm run build
+
+    - name: Prepare Laravel for Shared Hosting
+      run: |
+        # Membantu bypass folder public di shared hosting gratisan
+        mv public/* .
+        rm -rf public
+        # Ubah index.php agar mengarah ke path yang benar
+        sed -i "s|__DIR__.'/../vendor/autoload.php'|__DIR__.'/vendor/autoload.php'|g" index.php
+        sed -i "s|__DIR__.'/../bootstrap/app.php'|__DIR__.'/bootstrap/app.php'|g" index.php
+
+    - name: Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./
+        server-dir: /htdocs/ # Otomatis masuk ke htdocs InfinityFree

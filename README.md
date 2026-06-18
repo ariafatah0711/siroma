@@ -6,7 +6,7 @@
 * Repository: `siroma`
 * Database: `siroma_db`
 
-## Setup
+## Setup Local
 ```bash
 git clone https://github.com/ariafatah0711/siroma.git
 cd siroma
@@ -35,6 +35,18 @@ npm run build
 
 # Jalankan aplikasi
 php artisan serve
+```
+
+---
+
+## Setup Production
+- Login ke InfinityFree, buat akun hosting baru.
+- Masuk ke Control Panel (cPanel) mereka.
+- Buka MySQL Databases, bikin database baru (misal: epiz_xxx_siroma_db). Catat detail DB Host, User, dan Password-nya.
+- Buka Online File Manager, lu bakal nemu folder bernama htdocs.
+
+```bash
+
 ```
 
 ---
