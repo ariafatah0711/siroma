@@ -97,6 +97,13 @@ npm run build
 php artisan serve
 ```
 
+### Credensial:
+- Admin: admin@localhost / password
+- Reviewer BEM : bem@localhost / password
+- Reviewer HIMA : hima@localhost / password
+- Reviewer NFCC : nfcc@localhost / password
+- User : aria@localhost / password
+
 ---
 
 ## Setup Production (masih gagal di InfinityFree)
