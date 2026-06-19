@@ -6,6 +6,66 @@
 * Repository: `siroma`
 * Database: `siroma_db`
 
+### Struktur Folder
+
+```
+siroma/
+├── app/                          # Backend (Laravel PHP)
+│   ├── Filament/Admin/           #   Admin Panel (FE Admin)
+│   │   ├── Resources/            #     CRUD Resource
+│   │   │   ├── Applications/
+│   │   │   ├── ApplicationDocuments/
+│   │   │   ├── Divisions/
+│   │   │   ├── OrganizationMembers/
+│   │   │   ├── Organizations/
+│   │   │   ├── RecruitmentPeriods/
+│   │   │   └── Users/
+│   │   └── Widgets/              #     Dashboard widgets
+│   ├── Http/Controllers/         #   Web Controllers (Public FE)
+│   ├── Mail/                     #   Email classes
+│   ├── Models/                   #   Eloquent models
+│   ├── Policies/                 #   Authorization policies
+│   └── Providers/                #   Service providers
+│
+├── bootstrap/                    # App bootstrapping
+├── config/                       # Konfigurasi aplikasi
+├── database/                     # Database
+│   ├── factories/                #   Factory (dummy data)
+│   ├── migrations/               #   Migration (struktur tabel)
+│   ├── seeders/                  #   Seeder (data awal)
+│   └── sql/                      #   SQL cadangan/ekspor
+│
+├── public/                       # Publicly accessible (entry point)
+│   ├── build/                    #   Vite manifest
+│   ├── css/                      #   Compiled CSS
+│   ├── fonts/                    #   Font assets
+│   ├── js/                       #   Compiled JS
+│   └── storage/                  #   Symlink ke storage/app/public
+│
+├── resources/                    # Frontend (Public FE)
+│   ├── css/                      #   Source CSS
+│   ├── js/                       #   Source JS
+│   └── views/                    #   Blade template (HTML)
+│       ├── components/           #     Komponen reusable
+│       ├── emails/               #     Template email
+│       ├── layouts/              #     Layout utama
+│       └── pages/                #     Halaman publik
+│           ├── applications/
+│           ├── auth/
+│           ├── organizations/
+│           ├── profile/
+│           └── recruitments/
+│
+├── routes/                       # Definisi route
+│   ├── web.php                   #   Route publik
+│   └── console.php               #   Route CLI
+│
+├── storage/                      # Storage (logs, cache, upload)
+├── tests/                        # Automated tests
+├── vendor/                       # Composer dependencies
+└── node_modules/                 # NPM dependencies
+```
+
 ## Setup Local
 ```bash
 git clone https://github.com/ariafatah0711/siroma.git
